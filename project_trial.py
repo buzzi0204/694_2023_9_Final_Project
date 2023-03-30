@@ -54,8 +54,9 @@ cur = db.cursor()
 
 
 cur.execute(f"Create table trial ({lables[0]} varchar(10))")
-json_data[0][lables[0]]
-cur.execute(f"insert into trial values('{json_data[0][lables[0]]}')")
+value = json_data[0][lables[0]]
+cur.execute(f"insert into trial values('{value}')")
+db.commit()
 cur.execute("select * from trial")
-for row in cur.fetchall():
+for row in cur:
     print(row[0])
