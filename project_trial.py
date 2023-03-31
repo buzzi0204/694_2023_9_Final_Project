@@ -60,3 +60,10 @@ db.commit()
 cur.execute("select * from trial")
 for row in cur:
     print(row[0])
+    
+
+#######################################################
+## inserting in mongo db
+#############################################
+
+
