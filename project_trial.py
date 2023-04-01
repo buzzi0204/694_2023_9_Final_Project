@@ -27,7 +27,8 @@ def make_json(filepath, output_filename="output_file.json"):
         json.dump(data, f)
         
         
-make_json("corona-out-2")
+#make_json("corona-out-2")
+make_json("corona-out-3")
 
 ###########################################
 ## Making SQL DB Connection
