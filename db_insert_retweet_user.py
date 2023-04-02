@@ -2,7 +2,7 @@ import json
 import MySQLdb
 
 # with open("sample.txt", "r") as f:
-with open("sample1.json", "r") as f:
+with open("json_files/is_retweet.json", "r") as f:
     data = json.loads(f.read())
 
 # print(data[0]['retweeted_status']['user'])
@@ -10,7 +10,7 @@ with open("sample1.json", "r") as f:
 val_dict = {}
 
 for i in range(len(data)):
-    if data[i]['retweeted_status']:
+    if 'retweeted_status' in data[i]:
         val_list = []
         key_list = list(data[i]['retweeted_status']['user'].keys())
         for key in key_list:
@@ -19,7 +19,9 @@ for i in range(len(data)):
     else:
         continue
 
-print(val_dict[0])
+print(len(val_dict))
 
-
-###gfofbosfnb
+# if 'retweeted_status' in data[1]:
+#     print("True")
+# else:
+#     print("False")
