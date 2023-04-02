@@ -102,15 +102,15 @@ cur.execute("CREATE TABLE tweet (created_at VARCHAR(100),id BIGINT(20) NOT NULL,
             source VARCHAR(50),truncated BOOLEAN)")
 db.commit()
 
-query = "CREATE TABLE user (id BIGINT(20),id_str VARCHAR(100),name VARCHAR(50),username VARCHAR(50),location VARCHAR(50),url VARCHAR(50),description TEXT,translator_type VARCHAR(50),protected BOOLEAN,verified BOOLEAN,followers_count BIGINT(50),friends_count BIGINT(50),listed_count BIGINT(50),favourites_count BIGINT(50),no_tweets BIGINT(50),created_at VARCHAR(100))"
+query = "CREATE TABLE user_data (id BIGINT(20),id_str TEXT,name TEXT,username TEXT,location TEXT,url TEXT,description TEXT,translator_type TEXT,protected BOOLEAN,verified BOOLEAN,followers_count BIGINT(50),friends_count BIGINT(50),listed_count BIGINT(50),favourites_count BIGINT(50),no_tweets BIGINT(50),created_at TEXT)"
 cur.execute(query)
 
 db.commit()
 
 
-val_dict = {}
+# val_dict = {}
 
-query_insert = "INSERT INTO user VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+query_insert = "INSERT INTO user_data VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 
 for i in range(len(data)):
     val_list = []
