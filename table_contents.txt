@@ -1,0 +1,42 @@
+SQL
+    user_data
+        1. user_id (PK)
+        2. user_id_str
+        3. screen_name (user_name)
+        4. name
+        5. description
+        6. location
+        7. url
+        8. created_at (account creation)
+        9. followers_count
+        10. friends_count
+        11. favourites_count
+        12. statuses_count
+        13. lang
+        14. verified
+
+    retweets
+        1. retweet_id (PK)
+        2. tweet_id
+        3. user_id (FK)
+        4. created_at (retweet creation)
+
+    quoted_tweets
+        1. quoted_tweets_id (PK)
+        2. tweet_id
+        3. user_id (FK)
+        4. created_at (quote creation)
+
+MongoDB
+    tweets
+        1. id
+        2. id_str
+        3. text (tweet body)
+        4. created_at (tweet_creation)
+        5. user_id (tweet author id)
+        6. entities (entire json object)
+        7. retweet_count
+        8. favourites_count
+        9. quoted_count
+        10. lang
+        11. timestamp_ms
