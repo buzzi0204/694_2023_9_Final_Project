@@ -3,8 +3,8 @@ import json
 with open("json_files/tweet_retweet_quote_trial.json", "r") as f:
     data = json.loads(f.read())
 
-key_list = ['id', 'id_str', 'name', 'screen_name', 'location', 'url', 'description', 'verified', 
-            'created_at', 'followers_count', 'friends_count', 'favourites_count', 'statuses_count',
+key_list = ['id', 'id_str', 'screen_name', 'name', 'verified', 'description', 'location', 'url',
+            'created_at', 'followers_count', 'freinds_count', 'favourites_count', 'statuses_count',
             'lang']
 
 val_dict = {}
