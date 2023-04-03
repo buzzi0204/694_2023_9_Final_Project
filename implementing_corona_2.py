@@ -74,7 +74,11 @@ for i in range(len(data)):
     val_dict[i] = tuple(val_list)
     
     # SQL Query
-    cur.execute(query_insert, val_list)
+    try:
+        cur.execute(query_insert, val_list)
+    except Exception as e:
+        print(e)
+        pass
 
     if 'retweeted_status' in data[i]:
         rt_val_list = []
@@ -86,7 +90,12 @@ for i in range(len(data)):
         continue
     
     rt_val_dict[i] = tuple(rt_val_list)
-    cur.execute(query_insert, rt_val_list)
+    
+    try:
+        cur.execute(query_insert, rt_val_list)
+    except Exception as e:
+        print(e)
+        pass
 
     if 'quoted_status' in data[i]:
         qt_val_list = []
@@ -98,7 +107,14 @@ for i in range(len(data)):
         continue
 
     qt_val_dict[i] = tuple(qt_val_list)
-    cur.execute(query_insert, qt_val_list)
+    
+    try:
+        cur.execute(query_insert, qt_val_list)
+    except Exception as e:
+        print(e)
+        pass
+
+db.commit()
 
 print(len(val_dict))
 print(len(rt_val_dict))

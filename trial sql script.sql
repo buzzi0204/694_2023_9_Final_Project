@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS user_data(
     verfied BOOLEAN,
     bio TEXT,
     loaction VARCHAR(255),
-    url VARCHAR(255),
+    url TEXT(255),
     created_at TIMESTAMP,
     followers_count INTEGER,
     following_count INTEGER,
@@ -77,3 +77,9 @@ CREATE TABLE IF NOT EXISTS qouted_tweets(
 -- describe user_data;
 
 show tables;
+
+drop table user_data;
+select * from user_data;
+truncate table user_data;
+
+select count(*) from user_data;
