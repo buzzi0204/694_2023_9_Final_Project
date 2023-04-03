@@ -43,9 +43,9 @@ def extract_source(input_string):
             return extracted_source
         
 
-make_json("corona-out-2","corona_2.json")
+# make_json("corona-out-2","corona_2.json")
 #make_json("corona-out-3")
-
+make_json("make_json_trial","make_json_trial.json")
 ###########################################
 ## Making SQL DB Connection
 ############################################

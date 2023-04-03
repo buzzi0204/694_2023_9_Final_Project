@@ -1,27 +1,72 @@
 show databases;
-
 use trial;
-create database trial;
+-- create database trial;
 
-create table test(name varchar(20));
+-- create table test(name varchar(20));
 
-insert into test values ("Atharva");
+-- insert into test values ("Atharva");
 
-select * from test;
+-- select * from test;
 
-select * from trial;
+-- select * from trial;
 
-alter table trial modify column created_at varchar(1000);
+-- alter table trial modify column created_at varchar(1000);
 
-show tables;
+-- show tables;
+
+-- rename table user to user_data;
+
+-- drop table user_data;
+
+
+-- CREATE TABLE tweet (created_at VARCHAR(100),
+-- 	id BIGINT(20) NOT NULL,id_str VARCHAR(100),source VARCHAR(50),truncated BOOLEAN);
+
+-- select * from tweet;
+-- TRUNCATE TABLE tweet;
+
+CREATE TABLE IF NOT EXISTS user_data(
+	user_id INTEGER PRIMARY KEY NOT NULL,
+    user_id_str VARCHAR(255),
+    username VARCHAR(255),
+    full_name VARCHAR(255),
+    verfied BOOLEAN,
+    bio TEXT,
+    loaction VARCHAR(255),
+    url VARCHAR(255),
+    created_at TIMESTAMP,
+    followers_count INTEGER,
+    following_count INTEGER,
+    likes_count INTEGER,
+    total_tweets INTEGER,
+    lang VARCHAR(10)
+);
 
 
 
-CREATE TABLE tweet (created_at VARCHAR(100),
-	id BIGINT(20) NOT NULL,id_str VARCHAR(100),source VARCHAR(50),truncated BOOLEAN);
+CREATE TABLE IF NOT EXISTS retweets(
+	retweet_id INTEGER PRIMARY KEY,
+    tweet_id VARCHAR(255),
+    user_id INTEGER,
+    created_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user_data(user_id)
+);
 
-select * from tweet;
-TRUNCATE TABLE tweet;
+
+
+CREATE TABLE IF NOT EXISTS qouted_tweets(
+	quoted_tweets_id INTEGER PRIMARY KEY,
+    tweet_id VARCHAR(255),
+    user_id INTEGER,
+    created_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user_data(user_id)
+);
+
+
+
+
+
+
 
 
 
@@ -53,4 +98,9 @@ truncate table user;
 
 drop database trial;
 
+
+select * from user_data;
+select count(*) from user_data;
+
+describe user_data;
 
