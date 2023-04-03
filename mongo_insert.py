@@ -28,9 +28,31 @@ keys = [
     "lang",
 ]
 
-for index in data:
+def mongo_insertor(index, keys):
+    """
+    Args:
+        index ([type]): [description]
+        keys ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     obj = {}
     for key in keys:
         obj[key] = index[key]
-    obj["user_id"] = index["user"]["id"]
+    obj['user_id'] = index['user']['id']
+    return obj
+
+
+for index in data:
+    if 'retweeted_status' in index.keys():
+        obj = mongo_insertor(index['retweeted_status'], keys)
+        collection.insert_one(obj)
+        
+    if 'quoted_status' in index.keys():
+        obj = mongo_insertor(index['quoted_status'], keys)
+        collection.insert_one(obj)
+    
+    
+    obj = mongo_insertor(index, keys)
     collection.insert_one(obj)

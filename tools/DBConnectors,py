@@ -1,0 +1,82 @@
+from pymongo import MongoClient
+import json
+
+
+def mongo_insertor(index, keys):
+
+    """
+     Creates an Object for insert. In this case we're going to add a user_id to the object so it can be used in the query
+     
+     Args:
+     	 index: The index that will be used
+     	 keys: The keys that will be inserted
+     
+     Returns: 
+     	 A dictionary with the key / value pairs to be inserted into the index and the user_id for
+    """
+
+    """
+    Creates an Object for insertion o
+
+    Args:
+        index ([type]): [description]
+        keys ([type]): [description]
+    Returns:
+        [type]: [description]
+    """
+
+    obj = {}
+    # Set the index to the index
+    for key in keys:
+        obj[key] = index[key]
+    obj['user_id'] = index['user']['id']
+    return obj
+
+
+def load_in_mongo():
+
+"""
+ Loads tweets data into MongoDB. This is a convenience function to use when you want to load a file from a JSON
+"""
+
+    # Connecting to database
+    try:
+        conn = MongoClient()
+        print("Connected successfully")
+    except:
+        print("Could not connect to MongoDB")
+
+    # database
+    db = conn.database
+    collection = db.tweets_data
+
+    with open("json_files/sample_json_file.json", "r") as f:
+        data = json.load(f)
+
+
+    keys = [
+        "id",
+        "id_str",
+        "text",
+        "created_at",
+        "entities",
+        "retweet_count",
+        "favorite_count",
+        "lang",
+    ]
+
+    # Insert the index data into the collection.
+    for index in data:
+        # Insert the retweeted_status into the database.
+        if 'retweeted_status' in index.keys():
+            obj = mongo_insertor(index['retweeted_status'], keys)
+            collection.insert_one(obj)
+            
+        # Insert a quoted_status into the index.
+        if 'quoted_status' in index.keys():
+            obj = mongo_insertor(index['quoted_status'], keys)
+            collection.insert_one(obj)
+        
+        
+        obj = mongo_insertor(index, keys)
+        collection.insert_one(obj)
