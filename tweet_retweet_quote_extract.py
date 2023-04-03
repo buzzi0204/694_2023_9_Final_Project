@@ -1,7 +1,8 @@
 import json
 
 # with open("json_files/tweet_retweet_quote_trial.json", "r") as f:
-with open("json_files/is_retweet.json", "r") as f:
+# with open("json_files/is_retweet.json", "r") as f:
+with open("make_json_trial.json", "r") as f:
     data = json.loads(f.read())
 
 key_list = ['id', 'id_str', 'screen_name', 'name', 'verified', 'description', 'location', 'url',
