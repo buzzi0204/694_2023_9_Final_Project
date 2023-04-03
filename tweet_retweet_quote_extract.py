@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+import pandas as pd
 
 # with open("json_files/tweet_retweet_quote_trial.json", "r") as f:
 # with open("json_files/is_retweet.json", "r") as f:
@@ -17,6 +19,8 @@ for i in range(len(data)):
     val_list = []
 
     for key in key_list:
+        if key == 'created_at':
+            data[i]['user'][key] = pd.to_datetime(data[i]['user'][key])
         val_list.append(data[i]['user'][key])
     
     val_dict[i] = tuple(val_list)
@@ -24,6 +28,8 @@ for i in range(len(data)):
     if 'retweeted_status' in data[i]:
         rt_val_list = []
         for key in key_list:
+            if key == 'created_at':
+                data[i]['retweeted_status']['user'][key] = pd.to_datetime(data[i]['retweeted_status']['user'][key])
             rt_val_list.append(data[i]['retweeted_status']['user'][key])
     else:
         continue
@@ -33,6 +39,8 @@ for i in range(len(data)):
     if 'quoted_status' in data[i]:
         qt_val_list = []
         for key in key_list:
+            if key == 'created_at':
+                data[i]['quoted_status']['user'][key] = pd.to_datetime(data[i]['quoted_status']['user'][key])
             qt_val_list.append(data[i]['quoted_status']['user'][key])
     else:
         continue
@@ -43,4 +51,4 @@ print(len(val_dict))
 print(len(rt_val_dict))
 print(len(qt_val_dict))
 
-# print(qt_val_dict)
+print(val_dict[0])
