@@ -1,6 +1,6 @@
 show databases;
+create database trial;
 use trial;
--- create database trial;
 
 -- create table test(name varchar(20));
 
@@ -26,7 +26,7 @@ use trial;
 -- TRUNCATE TABLE tweet;
 
 CREATE TABLE IF NOT EXISTS user_data(
-	user_id INTEGER PRIMARY KEY NOT NULL,
+	user_id BIGINT PRIMARY KEY NOT NULL,
     user_id_str VARCHAR(255),
     username VARCHAR(255),
     full_name VARCHAR(255),
@@ -61,46 +61,19 @@ CREATE TABLE IF NOT EXISTS qouted_tweets(
     created_at TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user_data(user_id)
 );
-
-
-
-
-
-
-
-
-
-
-
-
-CREATE TABLE user (id BIGINT(20),
-	id_str VARCHAR(100),
-    name VARCHAR(50),
-    username VARCHAR(50),
-    location VARCHAR(50),
-    url VARCHAR(50),
-    description TEXT,
-    translator_type VARCHAR(50),
-    protected BOOLEAN,verified BOOLEAN,
-    followers_count BIGINT(50),
-    friends_count BIGINT(50),
-    listed_count BIGINT(50),
-    favourites_count BIGINT(50),
-    no_tweets BIGINT(50),
-    created_at VARCHAR(100)
-    );
     
 
     
-select * from user;
+-- select * from user;
 
-truncate table user;
+-- truncate table user;
 
-drop database trial;
+-- drop database trial;
 
 
-select * from user_data;
-select count(*) from user_data;
+-- select * from user_data;
+-- select count(*) from user_data;
 
-describe user_data;
+-- describe user_data;
 
+show tables;
