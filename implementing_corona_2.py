@@ -8,6 +8,7 @@ Created on Mon Apr  3 17:38:50 2023
 import json
 import MySQLdb
 import pandas as pd
+from pymongo import MongoClient
 
 ###########################################################################
 ## Functions
@@ -51,6 +52,11 @@ db = MySQLdb.connect(host="localhost",    # your host, usually localhost
                      passwd="root",  # your password
                      db="trial")
 cur = db.cursor()
+
+
+###########################################################################
+####### Inserting user data into sql
+#############################################################################
 
 key_list = ['id', 'id_str', 'screen_name', 'name', 'verified', 'description', 'location', 'url',
             'created_at', 'followers_count', 'friends_count', 'favourites_count', 'statuses_count',
@@ -122,6 +128,66 @@ print(len(qt_val_dict))
 
 
 
+###############################################################################
+########## Inserting tweets
+###############################################################################
+
+try:
+    conn = MongoClient()
+    print("Connected successfully")
+except:  
+    print("Could not connect to MongoDB")
+  
+# database
+db = conn.trial
+collection = db.tweets_data
+
+with open("json_files/corona-out-2.json", "r") as f:
+    data = json.load(f)
+    
+keys = ['id', 'id_str', 'text', 'created_at', 'entities', 'retweet_count', 'favorite_count', 'lang']
+
+def mongo_insertor(index, keys):
+    """AI is creating summary for mongo_insertor
+
+    Args:
+        index ([type]): [description]
+        keys ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+    obj = {
+        "_id": index['id']
+        }
+    for key in keys:
+        obj[key] = index[key]
+    
+    obj['user_id'] = index['user']['id']
+    return obj
 
 
-
+for index in data:
+    if 'retweeted_status' in index.keys():
+        obj = mongo_insertor(index['retweeted_status'], keys)
+        try:
+            collection.insert_one(obj)
+        except Exception as e:
+            print(e)
+            pass
+        
+    if 'quoted_status' in index.keys():
+        obj = mongo_insertor(index['quoted_status'], keys)
+        try:
+            collection.insert_one(obj)
+        except Exception as e:
+            print(e)
+            pass
+    
+    
+    obj = mongo_insertor(index, keys)
+    try:
+        collection.insert_one(obj)
+    except Exception as e:
+        print(e)
+        pass
