@@ -12,7 +12,7 @@ for i in range(len(data)):
     val_list.append(data[i]['id'])
     val_list.append(data[i]['retweeted_status']['id'])
     val_list.append(data[i]['user']['id'])
-    val_list.append(data[i]['created_at'])
+    val_list.append(pd.to_datetime(data[i]['created_at']))
 
     val_dict[i] = tuple(val_list)
 
