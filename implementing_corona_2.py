@@ -126,6 +126,67 @@ print(len(val_dict))
 print(len(rt_val_dict))
 print(len(qt_val_dict))
 
+###############################################################################
+######### Inserting retweets
+##############################################################################
+
+query_insert = "INSERT INTO retweets VALUES(%s,%s,%s,%s)"
+
+val_dict = {}
+
+for i in range(len(data)):
+    if 'retweeted_status' in data[i]:
+        val_list = []
+
+        val_list.append(data[i]['id'])
+        val_list.append(data[i]['retweeted_status']['id'])
+        val_list.append(data[i]['user']['id'])
+        val_list.append(pd.to_datetime(data[i]['created_at']))
+
+        val_dict[i] = tuple(val_list)
+
+        try:
+            cur.execute(query_insert, val_list)
+        except Exception as e:
+            print(e)
+            pass
+    else:
+        continue
+
+
+db.commit()
+
+print(len(val_dict))
+
+
+###############################################################################
+######### Inserting quoted tweets
+##############################################################################
+
+query_insert = "INSERT INTO quoted_tweets VALUES(%s,%s,%s,%s)"
+val_dict = {}
+
+for i in range(len(data)):
+    if 'quoted_status' in data[i]:
+        val_list = []
+
+        val_list.append(data[i]['quoted_status']['id'])
+        val_list.append(data[i]['id'])
+        val_list.append(data[i]['quoted_status']['user']['id'])
+        val_list.append(pd.to_datetime(data[i]['quoted_status']['created_at']))
+
+        val_dict[i] = tuple(val_list)
+
+        try:
+            cur.execute(query_insert, val_list)
+        except Exception as e:
+            print(e)
+            pass
+    
+    else:
+        continue
+
+print(len(val_dict))
 
 
 ###############################################################################

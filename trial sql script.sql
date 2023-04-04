@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS user_data(
 
 
 CREATE TABLE IF NOT EXISTS retweets(
-	retweet_id INTEGER PRIMARY KEY,
+	retweet_id BIGINT PRIMARY KEY,
     tweet_id VARCHAR(255),
-    user_id INTEGER,
+    user_id BIGINT,
     created_at TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user_data(user_id)
 );
@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS retweets(
 
 
 CREATE TABLE IF NOT EXISTS qouted_tweets(
-	quoted_tweets_id INTEGER PRIMARY KEY,
+	quoted_tweets_id BIGINT PRIMARY KEY,
     tweet_id VARCHAR(255),
-    user_id INTEGER,
+    user_id BIGINT,
     created_at TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user_data(user_id)
 );
@@ -80,6 +80,10 @@ show tables;
 
 drop table user_data;
 select * from user_data;
+drop table retweets;
 truncate table user_data;
-
+truncate table retweets;
 select count(*) from user_data;
+describe retweets;
+
+select * from retweets;
