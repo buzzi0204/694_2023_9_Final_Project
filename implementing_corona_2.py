@@ -185,7 +185,7 @@ for i in range(len(data)):
     
     else:
         continue
-
+db.commit()
 print(len(val_dict))
 
 
