@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS retweets(
 
 
 
-CREATE TABLE IF NOT EXISTS qouted_tweets(
+CREATE TABLE IF NOT EXISTS quoted_tweets(
 	quoted_tweets_id BIGINT PRIMARY KEY,
     tweet_id VARCHAR(255),
     user_id BIGINT,
@@ -85,5 +85,8 @@ truncate table user_data;
 truncate table retweets;
 select count(*) from user_data;
 describe retweets;
-
+describe quoted_tweets;
 select * from retweets;
+select * from quoted_tweets;
+truncate table quoted_tweets;
+select count(*) from quoted_tweets;

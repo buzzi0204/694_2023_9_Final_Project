@@ -170,9 +170,9 @@ for i in range(len(data)):
     if 'quoted_status' in data[i]:
         val_list = []
 
-        val_list.append(data[i]['quoted_status']['id'])
         val_list.append(data[i]['id'])
-        val_list.append(data[i]['quoted_status']['user']['id'])
+        val_list.append(data[i]['quoted_status']['id'])
+        val_list.append(data[i]['user']['id'])
         val_list.append(pd.to_datetime(data[i]['quoted_status']['created_at']))
 
         val_dict[i] = tuple(val_list)
