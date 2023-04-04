@@ -19,7 +19,7 @@ for i in range(len(data)):
     else:
         continue
 
-print(len(val_dict))
+# print(len(val_dict))
 
 # if 'retweeted_status' in data[1]:
 #     print("True")
