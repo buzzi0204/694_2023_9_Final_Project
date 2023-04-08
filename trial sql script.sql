@@ -90,3 +90,27 @@ select * from retweets;
 select * from quoted_tweets;
 truncate table quoted_tweets;
 select count(*) from quoted_tweets;
+
+show tables;
+
+select * from user_data;
+drop table user_data;
+
+drop table retweets;
+drop table quoted_tweets;
+
+
+create table trial_id (id BIGINT(20));
+alter table trial_id modify id BIGINT;
+show tables;
+
+describe trial_id;
+insert into trial_id values(1249403767180668930);
+select * from trial_id;
+drop table trial_id;
+
+describe quoted_tweets;
+select * from user_data where user_id = 46769281;
+
+select r.retweet_id,r.tweet_id,u.user_id,u.username from retweets r join user_data u on r.user_id = u.user_id where u.user_id = 1242817830946508801;
+select q.quoted_tweets_id,q.tweet_id,u.user_id,u.username from quoted_tweets q join user_data u on q.user_id = u.user_id where u.user_id = 1242817830946508801;
