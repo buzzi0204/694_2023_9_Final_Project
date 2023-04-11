@@ -96,9 +96,10 @@ cur.execute(create_table_query)
 ###############################################################################
 ############ Inserting data for tweets_data, retweet, quoted_tweet
 #############################################################################
-key_list = ['id', 'id_str', 'screen_name', 'name', 'verified', 'description', 'location', 'url',
-            'created_at', 'followers_count', 'friends_count', 'favourites_count', 'statuses_count',
-            'lang']
+key_list = ['id', 'id_str', 'screen_name', 'name', 'verified', 'description', 
+            'location', 'url', 
+            'created_at', 'followers_count', 'friends_count', 
+            'favourites_count', 'statuses_count', 'lang']
 
 
 query_insert = "INSERT INTO user_data VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\
@@ -129,7 +130,8 @@ for i in range(len(data)):
         rt_val_list = []
         for key in key_list:
             if key == 'created_at':
-                data[i]['retweeted_status']['user'][key] = pd.to_datetime(data[i]['retweeted_status']['user'][key])
+                data[i]['retweeted_status']['user'][key] = pd.to_datetime(
+                    data[i]['retweeted_status']['user'][key])
             rt_val_list.append(data[i]['retweeted_status']['user'][key])
     else:
         continue
@@ -146,7 +148,8 @@ for i in range(len(data)):
         qt_val_list = []
         for key in key_list:
             if key == 'created_at':
-                data[i]['quoted_status']['user'][key] = pd.to_datetime(data[i]['quoted_status']['user'][key])
+                data[i]['quoted_status']['user'][key] = pd.to_datetime(
+                    data[i]['quoted_status']['user'][key])
             qt_val_list.append(data[i]['quoted_status']['user'][key])
     else:
         continue
@@ -228,16 +231,27 @@ except:
     print("Could not connect to MongoDB")
   
 # database
-db = conn.twitter_db
+db = conn.trial
 collection = db.tweets_data
 
 # with open("json_files/corona-out-3.json", "r") as f:
 #     data = json.load(f)
     
-keys = ['id', 'id_str', 'text', 'created_at', 'entities', 'retweet_count', 'favorite_count', 'lang']
+keys = ['id', 'id_str', 'text', 'created_at', 'truncated', 
+        'is_quote_status','qoute_count', 'reply_count', 'entities', 
+        'retweet_count', 'favorite_count', 'lang', 'timestamp_ms', 'geo']
+
+def extract_source(input_string):
+    sources = ['iPhone', 'Android', 'WebApp', 'Instagram']
+    
+    for source in sources:
+        if source in input_string:
+            extracted_source = source
+            return extracted_source
 
 def mongo_insertor(index, keys):
     """
+
     Args:
         index ([type]): [description]
         keys ([type]): [description]
@@ -246,10 +260,15 @@ def mongo_insertor(index, keys):
         [type]: [description]
     """
     obj = {
-        "_id": index['id']
+        "_id": index['id'],
+        "source": extract_source(index['source'])
         }
+    
     for key in keys:
-        obj[key] = index[key]
+        try:
+            obj[key] = index[key]
+        except:
+            pass
     
     obj['user_id'] = index['user']['id']
     return obj
