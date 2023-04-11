@@ -231,7 +231,7 @@ except:
     print("Could not connect to MongoDB")
   
 # database
-db = conn.trial
+db = conn.twitter_db
 collection = db.tweets_data
 
 # with open("json_files/corona-out-3.json", "r") as f:
