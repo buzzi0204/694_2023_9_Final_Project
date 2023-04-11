@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 import json
-
+from db_insert_user import extract_source
 
 # Connecting to database
 try:
@@ -16,20 +16,27 @@ collection = db.tweets_data
 with open("json_files/sample_json_file.json", "r") as f:
     data = json.load(f)
 
-
 keys = [
     "id",
     "id_str",
     "text",
     "created_at",
+    "truncated",
+    "is_quote_status",
+    "qoute_count",
+    "reply_count",
     "entities",
     "retweet_count",
     "favorite_count",
     "lang",
+    "timestamp_ms",
+    "geo",
 ]
+
 
 def mongo_insertor(index, keys):
     """
+
     Args:
         index ([type]): [description]
         keys ([type]): [description]
@@ -37,9 +44,17 @@ def mongo_insertor(index, keys):
     Returns:
         [type]: [description]
     """
-    obj = {}
+    obj = {
+        "_id": index['id'],
+        "source": extract_source(index['source'])
+        }
+    
     for key in keys:
-        obj[key] = index[key]
+        try:
+            obj[key] = index[key]
+        except:
+            pass
+    
     obj['user_id'] = index['user']['id']
     return obj
 
@@ -47,12 +62,24 @@ def mongo_insertor(index, keys):
 for index in data:
     if 'retweeted_status' in index.keys():
         obj = mongo_insertor(index['retweeted_status'], keys)
-        collection.insert_one(obj)
+        try:
+            collection.insert_one(obj)
+        except Exception as e:
+            print(e)
+            pass
         
     if 'quoted_status' in index.keys():
         obj = mongo_insertor(index['quoted_status'], keys)
-        collection.insert_one(obj)
+        try:
+            collection.insert_one(obj)
+        except Exception as e:
+            print(e)
+            pass
     
     
     obj = mongo_insertor(index, keys)
-    collection.insert_one(obj)
+    try:
+        collection.insert_one(obj)
+    except Exception as e:
+        print(e)
+        pass
