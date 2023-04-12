@@ -234,9 +234,6 @@ except:
 db = conn.twitter_db
 collection = db.tweets_data
 
-# with open("json_files/corona-out-3.json", "r") as f:
-#     data = json.load(f)
-    
 keys = ['id', 'id_str', 'text', 'created_at', 'truncated', 
         'is_quote_status','qoute_count', 'reply_count', 'entities', 
         'retweet_count', 'favorite_count', 'lang', 'timestamp_ms', 'geo']
