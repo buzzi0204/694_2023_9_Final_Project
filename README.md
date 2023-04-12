@@ -94,18 +94,3 @@ Collection: retweets
     retweet_id (primary key)
     tweet_id (foreign key to tweets collection)
     user_id
-
-
-
-
-#### Report Sathi Information (bhoukat)
-
-<ol> 
-<li> cleaned the data </li>
-<li> Understood meta data </li>
-<li> Chose data that has to be used strategically </li>
-<li> Configured MongoDB and SQL </li>
-<li> Drew ER Diagram and developed the base for the application </li>
-<li> Shotlisted the data to be inclued using the ER Diagram </li>
-
-
