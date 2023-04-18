@@ -265,3 +265,161 @@ for index in data:
     except Exception as e:
         print(e)
         pass
+    
+    
+    
+##############################################################################
+# Implementing Cache
+#############################################################################
+
+from implementing_cache import Cache
+from bson import json_util
+
+cache  = Cache()
+
+
+query_find = {"user_id":16144221}
+
+results = collection.find(query_find)
+
+documents = [json_util.loads(json_util.dumps(doc["text"])) for doc in results]
+documents = [json_util.loads(json_util.dumps(doc["user_"])) for doc in results]
+
+cache.set("q2", documents)
+print(cache.get("q2"))
+###############################################################################
+
+query_find = "select user_id from user_data where username ='NolteNC';"
+
+cur.execute(query_find)
+result = cur.fetchall()
+
+query_find = {"user_id":result[0][0]}
+
+results = collection.find(query_find)
+documents = [json_util.loads(json_util.dumps(doc)) for doc in results]
+########################################################################
+#
+#functions for search
+##########################################################################
+
+def get_hashtag(hashtag):
+    if type(hashtag) != str:
+        hashtag = str(hashtag)
+    
+    target_key = (__name__, 'get_hashtag', hashtag)
+    
+    #if target_key in cache return from cache
+    
+    try:
+        query = {'entities.hashtags.text': {'$regex': f'.{hashtag}.', 
+                                            '$options': 'i'}}
+
+        results = collection.find(query)
+        documents = [json_util.loads(json_util.dumps(doc["text"])) 
+                     for doc in results]
+        #if not add in cache
+        if len(documents) == 0:
+            print("Hashtag not found")
+        else:
+            return documents
+        
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+hasht = input("enter hastag: ")
+
+get_hashtag(hasht)
+
+
+#######################################################################
+
+def get_word(word):
+    if type(word) != str:
+        word = str(word)
+    
+    target_key = (__name__, 'get_word', word)
+    # check cache
+    try:
+        query = {'text': {'$regex': f'.*{word}.*', '$options': 'i'}}
+
+        results = collection.find(query)
+        documents = [json_util.loads(json_util.dumps(doc["text"])) 
+                     for doc in results]
+    # add if not in cache
+        if len(documents) == 0:
+            print("Tweet(s) not found")
+        else:
+            return documents
+        
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+word = input("enter word: ")
+
+get_word(word)
+
+######################################################
+
+def get_username(username):
+    if type(username) != str:
+        username = str(username)
+    
+    target_key = (__name__, 'get_username', username)
+    # check cache
+    try:
+        query = f"SELECT user_id FROM user_data WHERE full_name LIKE \
+            '%{username}%' OR username LIKE '%{username}%'"
+            
+        cur.execute(query)
+        result_set = cur.fetchall()
+        
+        documents = []
+        for i in range(len(result_set)):
+            query_find = {'user_id':result_set[i][0]}
+            result_tweets = collection.find(query_find)
+            documents.append([json_util.loads(json_util.dumps(doc["text"])) 
+                         for doc in result_tweets])
+            
+    # add if not in cache
+        if len(documents) == 0:
+            print("Tweet(s) not found")
+        else:
+            return documents
+        
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+username = input("enter username: ")
+
+get_username(username)
+
+
+
+
+# username = "john"
+
+# query = f"select user_id from user_data where full_name like \
+#     '%{username}%' or username like '%{username}%'"
+# print(query)
+
+# cur.execute(query)
+
+# results = cur.fetchall()
+
+# documents = []
+
+# for i in range(len(results)):
+#     query_find = {'user_id':results[i][0]}
+#     results_1 = collection.find(query_find)
+#     documents.append([json_util.loads(json_util.dumps(doc["text"])) 
+#                  for doc in results_1])
+    
+# len(results)
+
+
+
+
