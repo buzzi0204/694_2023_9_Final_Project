@@ -1,8 +1,8 @@
 corona-out-2
 corona-out-3
-/.ipynb_checkpoints
+.ipynb_checkpoints
 /json_files/corona-out-2.json
 /json_files/corona-out-3.json
 /sql files/694project.mwb
-/__pycache__
-/.vscode
+__pycache__
+.vscode
