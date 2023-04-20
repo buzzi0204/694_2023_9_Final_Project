@@ -295,3 +295,130 @@ for index in data:
     except Exception as e:
         print(e)
         pass
+    
+##############################################################################
+## Implementing search queries and adding cacing as well
+############################################################################
+
+from implementing_cache import Cache
+from bson import json_util
+
+twitter_cache = Cache(checkpoint_file='cache_checkpoint.pickle', 
+                      checkpoint_interval=2)
+
+### Search by username
+
+def get_username(username):
+    if type(username) != str:
+        username = str(username)
+    
+    target_key = (__name__, 'get_username', username)
+    if target_key in twitter_cache.cache.keys():
+        twitter_cache.get(target_key)
+    else:
+        try:
+            query = f"SELECT user_id FROM user_data WHERE full_name LIKE \
+                '%{username}%' OR username LIKE '%{username}%'"
+                
+            cur.execute(query)
+            result_set = cur.fetchall()
+            
+            documents = []
+            for i in range(len(result_set)):
+                query_find = {'user_id':result_set[i][0]}
+                result_tweets = collection.find(query_find)
+                documents.append([json_util.loads(json_util.dumps(doc["text"])) 
+                             for doc in result_tweets])
+                
+            if len(documents) == 0:
+                print(f"No Tweet(s) with username or name {username} found")
+            else:
+                twitter_cache.set(target_key, documents)
+                return documents
+            
+        except Exception as e:
+            print(f"Error: {e}")
+
+
+### Search by hastag
+
+def get_hashtag(hashtag):
+    if type(hashtag) != str:
+        hashtag = str(hashtag)
+    
+    target_key = (__name__, 'get_hashtag', hashtag)
+    
+    #if target_key in cache return from cache
+    if target_key in twitter_cache.cache.keys():
+        twitter_cache.get(target_key)
+    else:    
+        try:
+            query = {'entities.hashtags.text': {'$regex': f'.{hashtag}.', 
+                                                '$options': 'i'}}
+    
+            results = collection.find(query)
+            documents = [json_util.loads(json_util.dumps(doc["text"])) 
+                         for doc in results]
+            #if not add in cache
+            
+            if len(documents) == 0:
+                print(f"Hashtag {hashtag} not found")
+            else:
+                twitter_cache.set(target_key, documents)
+                return documents
+            
+        except Exception as e:
+            print(f"Error: {e}")
+
+
+### Search by word
+
+def get_word(word):
+    if type(word) != str:
+        word = str(word)
+    
+    target_key = (__name__, 'get_word', word)
+    # check cache
+    if target_key in twitter_cache.cache.keys():
+        twitter_cache.get(target_key)
+    else:
+        try:
+            query = {'text': {'$regex': f'.*{word}.*', '$options': 'i'}}
+    
+            results = collection.find(query)
+            documents = [json_util.loads(json_util.dumps(doc["text"])) 
+                         for doc in results]
+        # add if not in cache
+            if len(documents) == 0:
+                print(f"No Tweet(s) with word {word} found")
+            else:
+                twitter_cache.set(target_key, documents)
+                return documents
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            
+            
+            
+get_hashtag("prison")
+get_username("jack")
+get_word("covid")
+
+get_hashtag("corona")
+get_username("john")
+get_word("vaccine")
+
+get_hashtag("covid")
+get_username("atharva")
+get_word("19")
+
+
+get_word("death")
+get_username("gucci")
+
+print(twitter_cache.cache.keys())
+
+
+
+
+

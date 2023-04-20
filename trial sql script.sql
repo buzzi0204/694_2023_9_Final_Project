@@ -114,3 +114,5 @@ select * from user_data where user_id = 46769281;
 
 select * from retweets r join user_data u on r.user_id = u.user_id where u.user_id = 1242817830946508801;
 select q.quoted_tweets_id,q.tweet_id,u.user_id,u.username from quoted_tweets q join user_data u on q.user_id = u.user_id where u.user_id = 1242817830946508801;
+
+select * from user_data where full_name like '%john%' or username like '%john%'

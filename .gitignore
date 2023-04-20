@@ -6,3 +6,4 @@ corona-out-3
 /sql files/694project.mwb
 __pycache__
 .vscode
+cache_checkpoint.pickle

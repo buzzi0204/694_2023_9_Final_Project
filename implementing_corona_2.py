@@ -9,6 +9,9 @@ import json
 import MySQLdb
 import pandas as pd
 from pymongo import MongoClient
+from implementing_cache import Cache
+from bson import json_util
+
 
 ###########################################################################
 ## Functions
@@ -271,22 +274,8 @@ for index in data:
 ##############################################################################
 # Implementing Cache
 #############################################################################
-
-from implementing_cache import Cache
-from bson import json_util
-
-cache  = Cache()
-
-
-query_find = {"user_id":16144221}
-
-results = collection.find(query_find)
-
-documents = [json_util.loads(json_util.dumps(doc["text"])) for doc in results]
-documents = [json_util.loads(json_util.dumps(doc["user_"])) for doc in results]
-
-cache.set("q2", documents)
-print(cache.get("q2"))
+twitter_cache = Cache(checkpoint_file='cache_checkpoint.pickle', 
+              checkpoint_interval=2)
 ###############################################################################
 
 query_find = "select user_id from user_data where username ='NolteNC';"
@@ -310,22 +299,26 @@ def get_hashtag(hashtag):
     target_key = (__name__, 'get_hashtag', hashtag)
     
     #if target_key in cache return from cache
+    if target_key in twitter_cache.cache.keys():
+        twitter_cache.get(target_key)
+    else:    
+        try:
+            query = {'entities.hashtags.text': {'$regex': f'.{hashtag}.', 
+                                                '$options': 'i'}}
     
-    try:
-        query = {'entities.hashtags.text': {'$regex': f'.{hashtag}.', 
-                                            '$options': 'i'}}
-
-        results = collection.find(query)
-        documents = [json_util.loads(json_util.dumps(doc["text"])) 
-                     for doc in results]
-        #if not add in cache
-        if len(documents) == 0:
-            print("Hashtag not found")
-        else:
-            return documents
-        
-    except Exception as e:
-        print(f"Error: {e}")
+            results = collection.find(query)
+            documents = [json_util.loads(json_util.dumps(doc["text"])) 
+                         for doc in results]
+            #if not add in cache
+            
+            if len(documents) == 0:
+                print(f"Hashtag {hashtag} not found")
+            else:
+                twitter_cache.set(target_key, documents)
+                return documents
+            
+        except Exception as e:
+            print(f"Error: {e}")
 
 
 hasht = input("enter hastag: ")
@@ -341,20 +334,24 @@ def get_word(word):
     
     target_key = (__name__, 'get_word', word)
     # check cache
-    try:
-        query = {'text': {'$regex': f'.*{word}.*', '$options': 'i'}}
-
-        results = collection.find(query)
-        documents = [json_util.loads(json_util.dumps(doc["text"])) 
-                     for doc in results]
-    # add if not in cache
-        if len(documents) == 0:
-            print("Tweet(s) not found")
-        else:
-            return documents
-        
-    except Exception as e:
-        print(f"Error: {e}")
+    if target_key in twitter_cache.cache.keys():
+        twitter_cache.get(target_key)
+    else:
+        try:
+            query = {'text': {'$regex': f'.*{word}.*', '$options': 'i'}}
+    
+            results = collection.find(query)
+            documents = [json_util.loads(json_util.dumps(doc["text"])) 
+                         for doc in results]
+        # add if not in cache
+            if len(documents) == 0:
+                print("Tweet(s) not found")
+            else:
+                twitter_cache.set(target_key, documents)
+                return documents
+            
+        except Exception as e:
+            print(f"Error: {e}")
 
 
 word = input("enter word: ")
@@ -368,29 +365,32 @@ def get_username(username):
         username = str(username)
     
     target_key = (__name__, 'get_username', username)
-    # check cache
-    try:
-        query = f"SELECT user_id FROM user_data WHERE full_name LIKE \
-            '%{username}%' OR username LIKE '%{username}%'"
+    if target_key in twitter_cache.cache.keys():
+        twitter_cache.get(target_key)
+    else:
+        try:
+            query = f"SELECT user_id FROM user_data WHERE full_name LIKE \
+                '%{username}%' OR username LIKE '%{username}%'"
+                
+            cur.execute(query)
+            result_set = cur.fetchall()
             
-        cur.execute(query)
-        result_set = cur.fetchall()
-        
-        documents = []
-        for i in range(len(result_set)):
-            query_find = {'user_id':result_set[i][0]}
-            result_tweets = collection.find(query_find)
-            documents.append([json_util.loads(json_util.dumps(doc["text"])) 
-                         for doc in result_tweets])
+            documents = []
+            for i in range(len(result_set)):
+                query_find = {'user_id':result_set[i][0]}
+                result_tweets = collection.find(query_find)
+                documents.append([json_util.loads(json_util.dumps(doc["text"])) 
+                             for doc in result_tweets])
+                
+        # add if not in cache
+            if len(documents) == 0:
+                print("Tweet(s) not found")
+            else:
+                twitter_cache.set(target_key, documents)
+                return documents
             
-    # add if not in cache
-        if len(documents) == 0:
-            print("Tweet(s) not found")
-        else:
-            return documents
-        
-    except Exception as e:
-        print(f"Error: {e}")
+        except Exception as e:
+            print(f"Error: {e}")
 
 
 username = input("enter username: ")
@@ -399,27 +399,69 @@ get_username(username)
 
 
 
+import time
 
-# username = "john"
 
-# query = f"select user_id from user_data where full_name like \
-#     '%{username}%' or username like '%{username}%'"
-# print(query)
 
-# cur.execute(query)
+start_time = time.time()
 
-# results = cur.fetchall()
 
-# documents = []
+get_hashtag("prison")
+get_username("jack")
+get_word("covid")
 
-# for i in range(len(results)):
-#     query_find = {'user_id':results[i][0]}
-#     results_1 = collection.find(query_find)
-#     documents.append([json_util.loads(json_util.dumps(doc["text"])) 
-#                  for doc in results_1])
+get_hashtag("corona")
+get_username("john")
+get_word("vaccine")
+
+get_hashtag("covid")
+get_username("atharva")
+get_word("19")
+
+
+get_word("death")
+get_username("gucci")
+
+
+
+
+end_time = time.time()
+
+
+print(len(twitter_cache.cache.keys()))
+
+# print(end_time - start_time)
+
+# target_key = (__name__, 'get_username', username)
+
+
+# if target_key in cache.cache.keys():
+#     cache.get(target_key)
+# else:
+#     query = f"select user_id from user_data where full_name like \
+#         '%{username}%' or username like '%{username}%'"
+#     print(query)
+
+#     cur.execute(query)
+
+#     results = cur.fetchall()
+
+#     documents = []
+
+#     for i in range(len(results)):
+#         query_find = {'user_id':results[i][0]}
+#         results_1 = collection.find(query_find)
+#         documents.append([json_util.loads(json_util.dumps(doc["text"])) 
+#                       for doc in results_1])
     
-# len(results)
+#     cache.set(target_key, documents)
 
+# print(len(documents))
+# end_time = time.time()
+
+# print(end_time - start_time)
+
+# print(cache.cache)
 
 
 
