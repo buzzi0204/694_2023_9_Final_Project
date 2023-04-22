@@ -48,12 +48,17 @@ def mongo_insertor(index, keys):
         "_id": index['id'],
         "source": extract_source(index['source'])
         }
-    
+        
+
     for key in keys:
         try:
             obj[key] = index[key]
         except:
             pass
+
+    if 'extended_tweet' in index.keys():
+        obj['text'] = index['extended_tweet']['full_text']
+    
     
     obj['user_id'] = index['user']['id']
     return obj
