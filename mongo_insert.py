@@ -61,7 +61,10 @@ def mongo_insertor(index, keys):
     
     
     obj['user_id'] = index['user']['id']
+
+    obj['popularity'] = index['quote_count'] + index['reply_count'] + index['retweet_count'] + index['favorite_count']
     return obj
+
 
 
 for index in data:
