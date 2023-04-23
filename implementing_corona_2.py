@@ -300,7 +300,7 @@ documents = [json_util.loads(json_util.dumps(doc)) for doc in results]
 # functions for search
 ##########################################################################
 
-#TODO: debug this function.
+
 def get_hashtag(hashtag):
     if type(hashtag) != str:
         hashtag = str(hashtag)
@@ -317,9 +317,9 @@ def get_hashtag(hashtag):
             
 
             df1 = pd.DataFrame(columns=['user_id', 'username'])
-            df2 = pd.DataFrame(columns=['user_id', 'tweet_text', 'popularity'])
+            df2 = pd.DataFrame(columns=['user_id', "tweet_id", 'tweet_text', 'popularity'])
 
-            keys_to_extract = ["user_id", "text", "popularity"]
+            keys_to_extract = ["user_id", "_id", "text", "popularity"]
 
 
 
@@ -330,7 +330,7 @@ def get_hashtag(hashtag):
             
 
             for i in range(len(documents)):
-                df2.loc[len(df2)] = [documents[i]['user_id'],
+                df2.loc[len(df2)] = [documents[i]['user_id'], documents[i]['_id'],
                                                 documents[i]['text'], documents[i]['popularity']]
 
 
@@ -342,7 +342,10 @@ def get_hashtag(hashtag):
                 results.append(result)
 
             for i in range(len(results)):
-                df1.loc[len(df1)] = [results[i][0][0], results[i][0][1]]
+                if len(results[i]) > 0:
+                    df1.loc[len(df1)] = [results[i][0][0], results[i][0][1]]
+                else:
+                    continue
                 
             df1.set_index('user_id', inplace=True)
             df2.set_index('user_id', inplace=True)
@@ -508,3 +511,15 @@ get_username("gucci")
 
 get_hashtag("trump")
 get_hashtag("prison")
+
+get_hashtag("covid")
+
+################################################################################################
+
+
+
+
+
+
+
+
