@@ -10,7 +10,7 @@ import MySQLdb
 import pandas as pd
 from pymongo import MongoClient
 from implementing_cache import Cache
-from bson import json_util
+from bson import json_util, Int64
 
 
 ###########################################################################
@@ -209,7 +209,7 @@ collection = db.tweets_data
 with open("json_files/corona-out-2.json", "r") as f:
     data = json.load(f)
     
-keys = ['id', 'id_str', 'text', 'created_at', 'truncated', 'is_quote_status','qoute_count', 'reply_count', 'entities', 'retweet_count', 'favorite_count', 'lang', 'timestamp_ms', 'geo']
+keys = ['id', 'id_str', 'text', 'created_at', 'is_quote_status','quote_count', 'reply_count', 'entities', 'retweet_count', 'favorite_count', 'lang', 'timestamp_ms', 'geo']
 
 def extract_source(input_string):
     sources = ['iPhone', 'Android', 'WebApp', 'Instagram']
@@ -230,19 +230,26 @@ def mongo_insertor(index, keys):
         [type]: [description]
     """
     obj = {
-        "_id": index['id'],
+        "_id": Int64(index['id']), 
         "source": extract_source(index['source'])
         }
-    
+        
+
     for key in keys:
         try:
             obj[key] = index[key]
         except:
             pass
-    
-    obj['user_id'] = index['user']['id']
-    return obj
 
+    if 'extended_tweet' in index.keys():
+        obj['text'] = index['extended_tweet']['full_text']
+    
+    
+    obj['user_id'] = Int64(index['user']['id'])
+
+    obj['popularity'] = index['quote_count'] + index['reply_count'] + index['retweet_count'] + index['favorite_count']
+    return obj
+    
 
 for index in data:
     if 'retweeted_status' in index.keys():
@@ -268,7 +275,6 @@ for index in data:
     except Exception as e:
         print(e)
         pass
-    
     
     
 ##############################################################################
@@ -363,105 +369,52 @@ get_word(word)
 def get_username(username):
     if type(username) != str:
         username = str(username)
-    
+
     target_key = (__name__, 'get_username', username)
+
     if target_key in twitter_cache.cache.keys():
         twitter_cache.get(target_key)
     else:
         try:
             query = f"SELECT user_id FROM user_data WHERE full_name LIKE \
                 '%{username}%' OR username LIKE '%{username}%'"
-                
+            
             cur.execute(query)
             result_set = cur.fetchall()
-            
+        
             documents = []
+
+            df1 = pd.DataFrame(columns=['user_id', 'username'])
+            df2 = pd.DataFrame(columns=['user_id', 'tweet_text', 'popularity'])
+
+            keys_to_extract = ["user_id", "text", "popularity"]
+
             for i in range(len(result_set)):
-                query_find = {'user_id':result_set[i][0]}
+                df1.loc[len(df1)] = [results[i][0], results[i][1]]
+                query_find = {'user_id': Int64(results[i][0])}
                 result_tweets = collection.find(query_find)
-                documents.append([json_util.loads(json_util.dumps(doc["text"])) 
-                             for doc in result_tweets])
+                documents.append([json_util.loads(json_util.dumps({key: doc.get(key) for key in keys_to_extract})) 
+                        for doc in result_tweets])
                 
-        # add if not in cache
+            for j in range(len(documents)):
+                df2.loc[len(df2)] = [documents[j][0]['user_id'], documents[j][0]['text'], documents[j][0]['popularity']]
+
+            df1.set_index('user_id', inplace=True)
+            df2.set_index('user_id', inplace=True)
+
+            df3 = df1.join(df2, on='user_id', how='inner')
+            df3.sort_values(by='popularity', ascending=False, inplace=True)
+            
+            # add if not in cache
             if len(documents) == 0:
                 print("Tweet(s) not found")
             else:
-                twitter_cache.set(target_key, documents)
-                return documents
-            
+                twitter_cache.set(target_key, df3)
+                return df3
+        
         except Exception as e:
             print(f"Error: {e}")
 
 
-username = input("enter username: ")
-
+username = input("Enter username: ")
 get_username(username)
-
-
-
-import time
-
-
-
-start_time = time.time()
-
-
-get_hashtag("prison")
-get_username("jack")
-get_word("covid")
-
-get_hashtag("corona")
-get_username("john")
-get_word("vaccine")
-
-get_hashtag("covid")
-get_username("atharva")
-get_word("19")
-
-
-get_word("death")
-get_username("gucci")
-
-
-
-
-end_time = time.time()
-
-
-print(len(twitter_cache.cache.keys()))
-
-# print(end_time - start_time)
-
-# target_key = (__name__, 'get_username', username)
-
-
-# if target_key in cache.cache.keys():
-#     cache.get(target_key)
-# else:
-#     query = f"select user_id from user_data where full_name like \
-#         '%{username}%' or username like '%{username}%'"
-#     print(query)
-
-#     cur.execute(query)
-
-#     results = cur.fetchall()
-
-#     documents = []
-
-#     for i in range(len(results)):
-#         query_find = {'user_id':results[i][0]}
-#         results_1 = collection.find(query_find)
-#         documents.append([json_util.loads(json_util.dumps(doc["text"])) 
-#                       for doc in results_1])
-    
-#     cache.set(target_key, documents)
-
-# print(len(documents))
-# end_time = time.time()
-
-# print(end_time - start_time)
-
-# print(cache.cache)
-
-
-
