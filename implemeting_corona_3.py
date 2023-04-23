@@ -9,6 +9,8 @@ import json
 import MySQLdb
 import pandas as pd
 from pymongo import MongoClient
+from implementing_cache import Cache
+from bson import json_util, Int64
 
 ###########################################################################
 ## Functions
@@ -300,106 +302,194 @@ for index in data:
 ## Implementing search queries and adding cacing as well
 ############################################################################
 
-from implementing_cache import Cache
-from bson import json_util
-
 twitter_cache = Cache(checkpoint_file='cache_checkpoint.pickle', 
                       checkpoint_interval=2)
 
+##############################################################################
 ### Search by username
+##############################################################################
 
 def get_username(username):
     if type(username) != str:
         username = str(username)
-    
+
     target_key = (__name__, 'get_username', username)
+
     if target_key in twitter_cache.cache.keys():
-        twitter_cache.get(target_key)
+        return twitter_cache.get(target_key)
     else:
         try:
-            query = f"SELECT user_id FROM user_data WHERE full_name LIKE \
+            query = f"SELECT user_id,username FROM user_data WHERE full_name LIKE \
                 '%{username}%' OR username LIKE '%{username}%'"
-                
+
             cur.execute(query)
             result_set = cur.fetchall()
-            
+
             documents = []
+
+            df1 = pd.DataFrame(columns=['user_id', 'username'])
+            df2 = pd.DataFrame(columns=['user_id', "tweet_id", 'tweet_text', 'popularity'])
+
+            keys_to_extract = ["user_id", "_id", "text", "popularity"]
+
             for i in range(len(result_set)):
-                query_find = {'user_id':result_set[i][0]}
+                df1.loc[len(df1)] = [result_set[i][0], result_set[i][1]]
+                query_find = {'user_id': Int64(result_set[i][0])}
                 result_tweets = collection.find(query_find)
-                documents.append([json_util.loads(json_util.dumps(doc["text"])) 
-                             for doc in result_tweets])
-                
+                documents.append([json_util.loads(json_util.dumps({key: doc.get(key) for key in keys_to_extract}))
+                                  for doc in result_tweets])
+
+            for j in range(len(documents)):
+                df2.loc[len(df2)] = [documents[j][0]['user_id'], documents[j][0]['_id'],
+                                     documents[j][0]['text'], documents[j][0]['popularity']]
+
+            df1.set_index('user_id', inplace=True)
+            df2.set_index('user_id', inplace=True)
+
+            df3 = df1.join(df2, on='user_id', how='inner')
+            df3.sort_values(by='popularity', ascending=False, inplace=True)
+
+            # add if not in cache
             if len(documents) == 0:
                 print(f"No Tweet(s) with username or name {username} found")
             else:
-                twitter_cache.set(target_key, documents)
-                return documents
-            
+                twitter_cache.set(target_key, df3)
+                return df3
+
         except Exception as e:
             print(f"Error: {e}")
 
-
+##############################################################################
 ### Search by hastag
+#############################################################################
 
 def get_hashtag(hashtag):
     if type(hashtag) != str:
         hashtag = str(hashtag)
-    
+
     target_key = (__name__, 'get_hashtag', hashtag)
-    
-    #if target_key in cache return from cache
+
+    # if target_key in cache return from cache
     if target_key in twitter_cache.cache.keys():
-        twitter_cache.get(target_key)
-    else:    
+        return twitter_cache.get(target_key)
+    else:
         try:
-            query = {'entities.hashtags.text': {'$regex': f'.{hashtag}.', 
+            query = {'entities.hashtags.text': {'$regex': f'.{hashtag}.',
                                                 '$options': 'i'}}
-    
-            results = collection.find(query)
-            documents = [json_util.loads(json_util.dumps(doc["text"])) 
-                         for doc in results]
-            #if not add in cache
             
+
+            df1 = pd.DataFrame(columns=['user_id', 'username'])
+            df2 = pd.DataFrame(columns=['user_id', "tweet_id", 'tweet_text', 'popularity'])
+
+            keys_to_extract = ["user_id", "_id", "text", "popularity"]
+
+
+
+
+            results = collection.find(query)
+            documents = [json_util.loads(json_util.dumps({key: doc.get(key) for key in keys_to_extract}))
+                            for doc in results]
+            
+
+            for i in range(len(documents)):
+                df2.loc[len(df2)] = [documents[i]['user_id'], documents[i]['_id'],
+                                                documents[i]['text'], documents[i]['popularity']]
+
+
+            results = []
+            for i in range(len(documents)):
+                query_find = f"select user_id,username from user_data where user_id = {documents[i]['user_id']};"
+                cur.execute(query_find)
+                result = cur.fetchall()
+                results.append(result)
+
+            for i in range(len(results)):
+                if len(results[i]) > 0:
+                    df1.loc[len(df1)] = [results[i][0][0], results[i][0][1]]
+                else:
+                    continue
+                
+            df1.set_index('user_id', inplace=True)
+            df2.set_index('user_id', inplace=True)
+
+            df3 = df1.join(df2, on='user_id', how='inner')
+            df3.sort_values(by='popularity', ascending=False, inplace=True)
+            
+
+
+            # if not add in cache
+
             if len(documents) == 0:
                 print(f"Hashtag {hashtag} not found")
             else:
-                twitter_cache.set(target_key, documents)
-                return documents
-            
+                twitter_cache.set(target_key, df3)
+                return df3
+
         except Exception as e:
             print(f"Error: {e}")
 
-
+##############################################################################
 ### Search by word
+##############################################################################
 
 def get_word(word):
     if type(word) != str:
         word = str(word)
-    
+
     target_key = (__name__, 'get_word', word)
-    # check cache
+
     if target_key in twitter_cache.cache.keys():
-        twitter_cache.get(target_key)
+        return twitter_cache.get(target_key)
     else:
         try:
             query = {'text': {'$regex': f'.*{word}.*', '$options': 'i'}}
-    
+
+            df1 = pd.DataFrame(columns=['user_id', 'username'])
+            df2 = pd.DataFrame(columns=['user_id', "tweet_id", 'tweet_text', 'popularity'])
+
+            keys_to_extract = ["user_id", "_id", "text", "popularity"]
+            # documents = []
             results = collection.find(query)
-            documents = [json_util.loads(json_util.dumps(doc["text"])) 
-                         for doc in results]
+            documents = [json_util.loads(json_util.dumps({key: doc.get(key) for key in keys_to_extract}))
+                            for doc in results]
+            for i in range(len(documents)):
+                df2.loc[len(df2)] = [documents[i]['user_id'], documents[i]['_id'],
+                                                documents[i]['text'], documents[i]['popularity']]
+            
+            results = []
+            for i in range(len(documents)):
+                query_find = f"select user_id,username from user_data where user_id = {documents[i]['user_id']};"
+                cur.execute(query_find)
+                result = cur.fetchall()
+                results.append(result)
+
+            for i in range(len(results)):
+                if (len(results[i]) > 0):
+                    df1.loc[len(df1)] = [results[i][0][0], results[i][0][1]]
+                else:
+                    continue
+            
+            df1.set_index('user_id', inplace=True)
+            df2.set_index('user_id', inplace=True)
+
+            df3 = df1.join(df2, on='user_id', how='inner')
+            df3.sort_values(by='popularity', ascending=False, inplace=True)
+
+
+
         # add if not in cache
             if len(documents) == 0:
                 print(f"No Tweet(s) with word {word} found")
             else:
-                twitter_cache.set(target_key, documents)
-                return documents
-            
+                twitter_cache.set(target_key, df3)
+                return df3
+
         except Exception as e:
             print(f"Error: {e}")
             
             
-            
+####################################################################
+  
 get_hashtag("prison")
 get_username("jack")
 get_word("covid")
@@ -416,6 +506,7 @@ get_word("19")
 get_word("death")
 get_username("gucci")
 
+print(twitter_cache.cache.keys())
 ##############################################################################
 
 

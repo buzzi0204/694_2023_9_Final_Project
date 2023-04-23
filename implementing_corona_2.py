@@ -386,15 +386,15 @@ def get_word(word):
             query = {'text': {'$regex': f'.*{word}.*', '$options': 'i'}}
 
             df1 = pd.DataFrame(columns=['user_id', 'username'])
-            df2 = pd.DataFrame(columns=['user_id', 'tweet_text', 'popularity'])
+            df2 = pd.DataFrame(columns=['user_id', "tweet_id", 'tweet_text', 'popularity'])
 
-            keys_to_extract = ["user_id", "text", "popularity"]
+            keys_to_extract = ["user_id", "_id", "text", "popularity"]
             # documents = []
             results = collection.find(query)
             documents = [json_util.loads(json_util.dumps({key: doc.get(key) for key in keys_to_extract}))
                             for doc in results]
             for i in range(len(documents)):
-                df2.loc[len(df2)] = [documents[i]['user_id'],
+                df2.loc[len(df2)] = [documents[i]['user_id'], documents[i]['_id'],
                                                 documents[i]['text'], documents[i]['popularity']]
             
             results = []
@@ -420,7 +420,7 @@ def get_word(word):
 
         # add if not in cache
             if len(documents) == 0:
-                print("Tweet(s) not found")
+                print(f"No Tweet(s) with word {word} found")
             else:
                 twitter_cache.set(target_key, df3)
                 return df3
@@ -454,9 +454,9 @@ def get_username(username):
             documents = []
 
             df1 = pd.DataFrame(columns=['user_id', 'username'])
-            df2 = pd.DataFrame(columns=['user_id', 'tweet_text', 'popularity'])
+            df2 = pd.DataFrame(columns=['user_id', "tweet_id", 'tweet_text', 'popularity'])
 
-            keys_to_extract = ["user_id", "text", "popularity"]
+            keys_to_extract = ["user_id", "_id", "text", "popularity"]
 
             for i in range(len(result_set)):
                 df1.loc[len(df1)] = [result_set[i][0], result_set[i][1]]
@@ -466,7 +466,7 @@ def get_username(username):
                                   for doc in result_tweets])
 
             for j in range(len(documents)):
-                df2.loc[len(df2)] = [documents[j][0]['user_id'],
+                df2.loc[len(df2)] = [documents[j][0]['user_id'], documents[j][0]['_id'],
                                      documents[j][0]['text'], documents[j][0]['popularity']]
 
             df1.set_index('user_id', inplace=True)
@@ -477,7 +477,7 @@ def get_username(username):
 
             # add if not in cache
             if len(documents) == 0:
-                print("Tweet(s) not found")
+                print(f"No Tweet(s) with username or name {username} found")
             else:
                 twitter_cache.set(target_key, df3)
                 return df3
