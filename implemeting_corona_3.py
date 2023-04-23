@@ -416,14 +416,6 @@ get_word("19")
 get_word("death")
 get_username("gucci")
 
-print(twitter_cache.cache.keys())
-
-
-
-
-
-
-
 ##############################################################################
 
 

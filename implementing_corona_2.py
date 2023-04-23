@@ -300,7 +300,6 @@ documents = [json_util.loads(json_util.dumps(doc)) for doc in results]
 # functions for search
 ##########################################################################
 
-
 def get_hashtag(hashtag):
     if type(hashtag) != str:
         hashtag = str(hashtag)
@@ -309,7 +308,7 @@ def get_hashtag(hashtag):
 
     # if target_key in cache return from cache
     if target_key in twitter_cache.cache.keys():
-        twitter_cache.get(target_key)
+        return twitter_cache.get(target_key)
     else:
         try:
             query = {'entities.hashtags.text': {'$regex': f'.{hashtag}.',
@@ -381,7 +380,7 @@ def get_word(word):
     target_key = (__name__, 'get_word', word)
 
     if target_key in twitter_cache.cache.keys():
-        twitter_cache.get(target_key)
+        return twitter_cache.get(target_key)
     else:
         try:
             query = {'text': {'$regex': f'.*{word}.*', '$options': 'i'}}
@@ -443,7 +442,7 @@ def get_username(username):
     target_key = (__name__, 'get_username', username)
 
     if target_key in twitter_cache.cache.keys():
-        twitter_cache.get(target_key)
+        return twitter_cache.get(target_key)
     else:
         try:
             query = f"SELECT user_id,username FROM user_data WHERE full_name LIKE \
@@ -504,15 +503,25 @@ get_word("vaccine")
 get_hashtag("covid")
 get_username("atharva")
 get_word("19")
+get_word("death")
+
+get_username("gucci")
+
+get_hashtag("prison")
+get_username("jack")
+get_word("covid")
+
+get_hashtag("corona")
+get_username("john")
+get_word("vaccine")
+
+get_hashtag("covid")
+get_username("atharva")
+get_word("19")
 
 
 get_word("death")
 get_username("gucci")
-
-get_hashtag("trump")
-get_hashtag("prison")
-
-get_hashtag("covid")
 
 ################################################################################################
 
