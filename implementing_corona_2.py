@@ -523,3 +523,12 @@ with_cache = end_time - start_time
 
 print(without_cache)
 print(with_cache)
+#####################################################################################################################
+# Implementing Indexes
+#####################################################################################################################
+
+query_index = "CREATE INDEX username_idx ON user_data(username);"
+
+cur.execute(query_index)
+
+collection.create_index('user_id')

@@ -70,13 +70,14 @@ create_table_query = "CREATE TABLE IF NOT EXISTS user_data(\
     following_count INTEGER,\
     likes_count INTEGER,\
     total_tweets INTEGER,\
-    lang VARCHAR(10)\
+    lang VARCHAR(10),\
+    INDEX(username)\
 );"
     
 cur.execute(create_table_query)
 
 
-create_table_query = "CREATE TABLE IF NOT EXISTS retweets(\
+create_table_query = "CREATE TABLE IF NOT EXISTS retweet_data(\
 	retweet_id BIGINT PRIMARY KEY,\
     tweet_id VARCHAR(255),\
     user_id BIGINT,\
@@ -86,7 +87,7 @@ create_table_query = "CREATE TABLE IF NOT EXISTS retweets(\
 
 cur.execute(create_table_query)
 
-create_table_query = "CREATE TABLE IF NOT EXISTS quoted_tweets(\
+create_table_query = "CREATE TABLE IF NOT EXISTS quoted_tweet_data(\
 	quoted_tweets_id BIGINT PRIMARY KEY,\
     tweet_id VARCHAR(255),\
     user_id BIGINT,\
@@ -170,7 +171,7 @@ db.commit()
 # print(len(rt_val_dict))
 # print(len(qt_val_dict))
 
-query_insert = "INSERT INTO retweets VALUES(%s,%s,%s,%s);"
+query_insert = "INSERT INTO retweet_data VALUES(%s,%s,%s,%s);"
 
 val_dict = {}
 
@@ -198,7 +199,7 @@ db.commit()
 
 # print(len(val_dict))
 
-query_insert = "INSERT INTO quoted_tweets VALUES(%s,%s,%s,%s)"
+query_insert = "INSERT INTO quoted_tweet_data VALUES(%s,%s,%s,%s)"
 val_dict = {}
 
 for i in range(len(data)):
@@ -236,17 +237,18 @@ except:
 db = conn.twitter_db
 collection = db.tweets_data
 
-keys = ['id', 'id_str', 'text', 'created_at', 'truncated', 
-        'is_quote_status','qoute_count', 'reply_count', 'entities', 
-        'retweet_count', 'favorite_count', 'lang', 'timestamp_ms', 'geo']
+keys = ['id', 'id_str', 'text', 'created_at', 'is_quote_status', 'quote_count',
+        'reply_count', 'entities', 'retweet_count', 'favorite_count', 'lang', 'timestamp_ms', 'geo']
+
 
 def extract_source(input_string):
     sources = ['iPhone', 'Android', 'WebApp', 'Instagram']
-    
+
     for source in sources:
         if source in input_string:
             extracted_source = source
             return extracted_source
+
 
 def mongo_insertor(index, keys):
     """
@@ -259,17 +261,23 @@ def mongo_insertor(index, keys):
         [type]: [description]
     """
     obj = {
-        "_id": index['id'],
+        "_id": Int64(index['id']),
         "source": extract_source(index['source'])
-        }
-    
+    }
+
     for key in keys:
         try:
             obj[key] = index[key]
         except:
             pass
-    
-    obj['user_id'] = index['user']['id']
+
+    if 'extended_tweet' in index.keys():
+        obj['text'] = index['extended_tweet']['full_text']
+
+    obj['user_id'] = Int64(index['user']['id'])
+
+    obj['popularity'] = index['quote_count'] + index['reply_count'] + \
+        index['retweet_count'] + index['favorite_count']
     return obj
 
 
@@ -281,7 +289,7 @@ for index in data:
         except Exception as e:
             print(e)
             pass
-        
+
     if 'quoted_status' in index.keys():
         obj = mongo_insertor(index['quoted_status'], keys)
         try:
@@ -289,15 +297,16 @@ for index in data:
         except Exception as e:
             print(e)
             pass
-    
-    
+
     obj = mongo_insertor(index, keys)
     try:
         collection.insert_one(obj)
     except Exception as e:
         print(e)
         pass
-    
+
+collection.create_index('user_id')
+
 ##############################################################################
 ## Implementing search queries and adding cacing as well
 ############################################################################
@@ -506,7 +515,7 @@ get_word("19")
 get_word("death")
 get_username("gucci")
 
-print(twitter_cache.cache.keys())
+print(len(twitter_cache.cache.keys()))
 ##############################################################################
 
 
