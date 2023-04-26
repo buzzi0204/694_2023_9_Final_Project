@@ -504,8 +504,8 @@ def get_word(word):
 # Top 10 users
 #########################################################################################
 
-def get_top_10():
-    target_key = (__name__, 'get_top_10')
+def get_top_10_users():
+    target_key = (__name__, 'get_top_10_users')
 
     if target_key in twitter_cache.cache.keys():
         return twitter_cache.get(target_key)
@@ -530,7 +530,53 @@ def get_top_10():
         except Exception as e:
             print(f"Error: {e}")
 
-#############################################################################################################
+#################################################################################################
+# Top 10 tweets
+#################################################################################################
+
+def get_top_10_tweets():
+    target_key = (__name__, 'get_top_10_tweets')
+
+    if target_key in twitter_cache.cache.keys():
+        return twitter_cache.get(target_key)
+    
+    else:
+        try:
+            df1 = pd.DataFrame(columns=['user_id', 'username'])
+            df2 = pd.DataFrame(columns=['user_id', 'tweet_id', 'tweet_text', 'popularity'])
+
+            keys_to_extract = ["_id", "user_id", "text", "popularity"]
+            results = collection.find().sort("popularity", -1).limit(10)
+            documents = [json_util.loads(json_util.dumps({key: doc.get(key) for key in keys_to_extract}))
+                            for doc in results]
+            
+            for i in range(len(documents)):
+                df2.loc[len(df2)] = [documents[i]['user_id'], documents[i]['_id'],
+                                                documents[i]['text'], documents[i]['popularity']]
+            
+            results = []
+            for i in range(len(documents)):
+                query_find = f"select user_id,username from user_data where user_id = {documents[i]['user_id']};"
+                cur.execute(query_find)
+                result = cur.fetchall()
+                results.append(result)
+
+            for i in range(len(results)):
+                if (len(results[i]) > 0):
+                    df1.loc[len(df1)] = [results[i][0][0], results[i][0][1]]
+                else:
+                    continue
+                        
+            df1.set_index('user_id', inplace=True)
+            df2.set_index('user_id', inplace=True)
+
+            df3 = df1.join(df2, on='user_id', how='inner')
+            return df3
+        
+        except Exception as e:
+            print(f"Error: {e}")
+
+###################################################################################################
   
 get_hashtag("prison")
 get_username("jack")
