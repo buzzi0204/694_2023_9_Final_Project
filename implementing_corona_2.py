@@ -657,3 +657,19 @@ def get_top_10_tweets():
             print(f"Error: {e}")
 
 get_top_10_tweets()
+
+
+start_time = time.time()
+get_username("jack")
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+print(f"The time taken before storing the result in cache is {elapsed_time}.")
+
+
+start_time = time.time()
+get_username("jack")
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+print(f"The time taken after storing the result in cache is {elapsed_time}.")
