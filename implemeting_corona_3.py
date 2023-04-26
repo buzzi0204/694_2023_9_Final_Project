@@ -357,6 +357,7 @@ def get_username(username):
 
             df3 = df1.join(df2, on='user_id', how='inner')
             df3.sort_values(by='popularity', ascending=False, inplace=True)
+            df3.drop_duplicates(subset=['tweet_id'], keep='first', inplace=True)
 
             # add if not in cache
             if len(documents) == 0:
@@ -423,6 +424,7 @@ def get_hashtag(hashtag):
 
             df3 = df1.join(df2, on='user_id', how='inner')
             df3.sort_values(by='popularity', ascending=False, inplace=True)
+            df3.drop_duplicates(subset=['tweet_id'], keep='first', inplace=True)
             
 
 
@@ -483,6 +485,7 @@ def get_word(word):
 
             df3 = df1.join(df2, on='user_id', how='inner')
             df3.sort_values(by='popularity', ascending=False, inplace=True)
+            df3.drop_duplicates(subset=['tweet_id'], keep='first', inplace=True)
 
 
 
@@ -515,7 +518,13 @@ get_word("19")
 get_word("death")
 get_username("gucci")
 
+get_word("Corona go")
+get_username("yashfoundation")
+
 print(len(twitter_cache.cache.keys()))
+print(twitter_cache.cache.keys())
+
+print(twitter_cache.get(('__main__', 'get_word', 'covid')))
 ##############################################################################
 
 

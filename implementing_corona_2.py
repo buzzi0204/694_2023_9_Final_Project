@@ -418,7 +418,7 @@ def get_word(word):
 
             df3 = df1.join(df2, on='user_id', how='inner')
             df3.sort_values(by='popularity', ascending=False, inplace=True)
-
+            df3.drop_duplicates(subset=['tweet_id'], keep='first', inplace=True)
 
 
         # add if not in cache
