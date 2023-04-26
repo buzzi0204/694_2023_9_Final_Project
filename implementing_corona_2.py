@@ -418,7 +418,7 @@ def get_word(word):
 
             df3 = df1.join(df2, on='user_id', how='inner')
             df3.sort_values(by='popularity', ascending=False, inplace=True)
-            df3.drop_duplicates(subset=['tweet_id'], keep='first', inplace=True)
+
 
 
         # add if not in cache
@@ -532,3 +532,39 @@ query_index = "CREATE INDEX username_idx ON user_data(username);"
 cur.execute(query_index)
 
 collection.create_index('user_id')
+
+query = f"SELECT user_id,username FROM user_data ORDER"
+
+cur.execute(query)
+result_set = cur.fetchall()
+
+##########################################################################################
+
+def get_top_10():
+    target_key = (__name__, 'get_top_10')
+
+    if target_key in twitter_cache.cache.keys():
+        return twitter_cache.get(target_key)
+    
+    else:
+        try:
+            query = "SELECT user_id, username from user_data \
+                  ORDER BY followers_count DESC, total_tweets DESC LIMIT 10"
+
+            cur.execute(query)
+            result_set = cur.fetchall()
+
+            df1 = pd.DataFrame(columns=['user_id', 'username'])
+
+            for i in range(len(result_set)):
+                df1.loc[len(df1)] = [result_set[i][0], result_set[i][1]]
+
+            # add if not in cache
+            twitter_cache.set(target_key, df1)
+            return df1
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+
+get_top_10()
