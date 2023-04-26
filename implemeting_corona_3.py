@@ -11,6 +11,7 @@ import pandas as pd
 from pymongo import MongoClient
 from implementing_cache import Cache
 from bson import json_util, Int64
+from time import time
 
 ###########################################################################
 ## Functions
@@ -578,10 +579,53 @@ def get_top_10_tweets():
             print(f"Error: {e}")
 
 ###################################################################################################
-  
-get_hashtag("prison")
+
+start_time = time()
 get_username("jack")
+end_time = time()
+elapsed_time = end_time - start_time
+
+print(f"The time taken before storing the result in cache is {elapsed_time}.")
+
+
+start_time = time()
+get_username("jack")
+end_time = time()
+elapsed_time = end_time - start_time
+
+print(f"The time taken after storing the result in cache is {elapsed_time}.")
+
+
+start_time = time()
+get_hashtag("prison")
+end_time = time()
+elapsed_time = end_time - start_time
+
+print(f"The time taken before storing the result in cache is {elapsed_time}.")
+
+
+start_time = time()
+get_hashtag("prison")
+end_time = time()
+elapsed_time = end_time - start_time
+
+print(f"The time taken after storing the result in cache is {elapsed_time}.")
+
+
+start_time = time()
 get_word("covid")
+end_time = time()
+elapsed_time = end_time - start_time
+
+print(f"The time taken before storing the result in cache is {elapsed_time}.")
+
+
+start_time = time()
+get_word("covid")
+end_time = time()
+elapsed_time = end_time - start_time
+
+print(f"The time taken after storing the result in cache is {elapsed_time}.")
 
 get_hashtag("corona")
 get_username("john")
@@ -597,6 +641,10 @@ get_username("gucci")
 
 get_word("Corona go")
 get_username("yashfoundation")
+
+get_top_10_tweets()
+get_top_10_users()
+
 
 print(len(twitter_cache.cache.keys()))
 print(twitter_cache.cache.keys())
