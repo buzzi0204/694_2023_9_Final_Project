@@ -571,6 +571,7 @@ def get_top_10_tweets():
             df2.set_index('user_id', inplace=True)
 
             df3 = df1.join(df2, on='user_id', how='inner')
+            twitter_cache.set(target_key, df3)
             return df3
         
         except Exception as e:
