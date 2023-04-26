@@ -500,7 +500,37 @@ def get_word(word):
             print(f"Error: {e}")
             
             
-####################################################################
+#########################################################################################
+# Top 10 users
+#########################################################################################
+
+def get_top_10():
+    target_key = (__name__, 'get_top_10')
+
+    if target_key in twitter_cache.cache.keys():
+        return twitter_cache.get(target_key)
+    
+    else:
+        try:
+            query = "SELECT user_id, username from user_data \
+                  ORDER BY followers_count DESC, total_tweets DESC LIMIT 10"
+
+            cur.execute(query)
+            result_set = cur.fetchall()
+
+            df1 = pd.DataFrame(columns=['user_id', 'username'])
+
+            for i in range(len(result_set)):
+                df1.loc[len(df1)] = [result_set[i][0], result_set[i][1]]
+
+            # add if not in cache
+            twitter_cache.set(target_key, df1)
+            return df1
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+#############################################################################################################
   
 get_hashtag("prison")
 get_username("jack")
