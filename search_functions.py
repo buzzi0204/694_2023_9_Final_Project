@@ -1,16 +1,28 @@
-import streamlit as st
 import pandas as pd
-import pymysql
-import pymongo
+import MySQLdb
+from pymongo import MongoClient
 from bson import json_util, Int64
 from implementing_cache import Cache
 
-sql_conn = pymysql.connect(host='localhost', user='root', password='root', database='twitter_db')
-cursor = sql_conn.cursor()
+db = MySQLdb.connect(host="localhost",
+                     user="root",
+                     passwd="root",
+                     db="twitter_db")
+cur = db.cursor()
+# sql_conn = pymysql.connect(host='localhost', user='root', password='root', database='twitter_db')
+# cursor = sql_conn.cursor()
 
-mon_conn = pymongo.MongoClient()
-db = mon_conn.trial
+try:
+    conn = MongoClient()
+    print("Connected successfully")
+except:  
+    print("Could not connect to MongoDB")
+  
+db = conn.twitter_db
 collection = db.tweets_data
+# mon_conn = pymongo.MongoClient()
+# db = mon_conn.trial
+# collection = db.tweets_data
 
 twitter_cache = Cache(checkpoint_file='cache_checkpoint.pickle', 
                       checkpoint_interval=2)
@@ -52,8 +64,8 @@ def get_hashtag(hashtag):
             results = []
             for i in range(len(documents)):
                 query_find = f"select user_id,username from user_data where user_id = {documents[i]['user_id']};"
-                cursor.execute(query_find)
-                result = cursor.fetchall()
+                cur.execute(query_find)
+                result = cur.fetchall()
                 results.append(result)
 
             for i in range(len(results)):
@@ -77,7 +89,7 @@ def get_hashtag(hashtag):
                 print(f"Hashtag {hashtag} not found")
             else:
                 twitter_cache.set(target_key, df3)
-                st.table(df3)
+                return df3
 
         except Exception as e:
             print(f"Error: {e}")
@@ -109,8 +121,8 @@ def get_keyword(keyword):
             results = []
             for i in range(len(documents)):
                 query_find = f"select user_id,username from user_data where user_id = {documents[i]['user_id']};"
-                cursor.execute(query_find)
-                result = cursor.fetchall()
+                cur.execute(query_find)
+                result = cur.fetchall()
                 results.append(result)
 
             for i in range(len(results)):
@@ -133,7 +145,7 @@ def get_keyword(keyword):
                 print(f"No Tweet(s) with word {keyword} found")
             else:
                 twitter_cache.set(target_key, df3)
-                st.table(df3)
+                return df3
 
         except Exception as e:
             print(f"Error: {e}")
@@ -151,8 +163,8 @@ def get_username(username):
             query = f"SELECT user_id,username FROM user_data WHERE full_name LIKE \
                 '%{username}%' OR username LIKE '%{username}%'"
 
-            cursor.execute(query)
-            result_set = cursor.fetchall()
+            cur.execute(query)
+            result_set = cur.fetchall()
 
             documents = []
 
@@ -184,7 +196,7 @@ def get_username(username):
                 print(f"No Tweet(s) with username or name {username} found")
             else:
                 twitter_cache.set(target_key, df3)
-                st.table(df3)
+                return df3
 
         except Exception as e:
             print(f"Error: {e}")
@@ -200,8 +212,8 @@ def get_top_10_users():
             query = "SELECT user_id, username from user_data \
                   ORDER BY followers_count DESC, total_tweets DESC LIMIT 10"
 
-            cursor.execute(query)
-            result_set = cursor.fetchall()
+            cur.execute(query)
+            result_set = cur.fetchall()
 
             df1 = pd.DataFrame(columns=['user_id', 'username'])
 
@@ -210,7 +222,7 @@ def get_top_10_users():
 
             # add if not in cache
             twitter_cache.set(target_key, df1)
-            st.table(df1)
+            return df1
 
         except Exception as e:
             print(f"Error: {e}")
@@ -238,8 +250,8 @@ def get_top_10_tweets():
             results = []
             for i in range(len(documents)):
                 query_find = f"select user_id,username from user_data where user_id = {documents[i]['user_id']};"
-                cursor.execute(query_find)
-                result = cursor.fetchall()
+                cur.execute(query_find)
+                result = cur.fetchall()
                 results.append(result)
 
             for i in range(len(results)):
@@ -253,7 +265,7 @@ def get_top_10_tweets():
 
             df3 = df1.join(df2, on='user_id', how='inner')
             twitter_cache.set(target_key, df3)
-            st.table(df3)
+            return df3
         
         except Exception as e:
             print(f"Error: {e}")
