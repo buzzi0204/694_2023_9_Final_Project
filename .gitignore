@@ -8,3 +8,4 @@ corona-out-3
 __pycache__
 .vscode
 cache_checkpoint.pickle
+unwanted_check

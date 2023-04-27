@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request, render_template
-import json
 import MySQLdb
 import pandas as pd
 from pymongo import MongoClient
@@ -270,9 +269,9 @@ def get_top_10_tweets():
         except Exception as e:
             print(f"Error: {e}")
 
-@app.route('/home')
+@app.route('/')
 def home():
-    return render_template("form.html")
+    return render_template("/html/form.html")
 
 @app.route('/search', methods=['GET', 'POST'])
 def helloworld():
@@ -285,17 +284,17 @@ def helloworld():
         data = get_hashtag(query)
     else:
         data = get_username(query)
-    return render_template("query.html", name = query,value = data.to_html())
+    return render_template("/html/query.html", name = query,value = data.to_html())
 
 @app.route('/top_10_tweets')
 def top_10_tweets():
     data = get_top_10_tweets()
-    return render_template("top_10.html",value = data.to_html())
+    return render_template("/html/top_10.html",value = data.to_html())
 
 @app.route('/top_10_users')
 def top_10_users():
     data = get_top_10_users()
-    return render_template("top_10.html",value = data.to_html())
+    return render_template("/html/top_10.html",value = data.to_html())
   
 if __name__ == '__main__':
     app.run(debug=False)

@@ -444,7 +444,7 @@ def get_hashtag(hashtag):
 ### Search by word
 ##############################################################################
 
-def get_word(word):
+def get_keyword(word):
     if type(word) != str:
         word = str(word)
 
@@ -613,7 +613,7 @@ print(f"The time taken after storing the result in cache is {elapsed_time}.")
 
 
 start_time = time()
-get_word("covid")
+get_keyword("covid")
 end_time = time()
 elapsed_time = end_time - start_time
 
@@ -621,7 +621,7 @@ print(f"The time taken before storing the result in cache is {elapsed_time}.")
 
 
 start_time = time()
-get_word("covid")
+get_keyword("covid")
 end_time = time()
 elapsed_time = end_time - start_time
 
@@ -629,17 +629,17 @@ print(f"The time taken after storing the result in cache is {elapsed_time}.")
 
 get_hashtag("corona")
 get_username("john")
-get_word("vaccine")
+get_keyword("vaccine")
 
 get_hashtag("covid")
 get_username("atharva")
-get_word("19")
+get_keyword("19")
 
 
-get_word("death")
+get_keyword("death")
 get_username("gucci")
 
-get_word("Corona go")
+get_keyword("Corona go")
 get_username("yashfoundation")
 
 get_top_10_tweets()
