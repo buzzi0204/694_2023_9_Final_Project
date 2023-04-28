@@ -6,7 +6,7 @@ from implementing_cache import Cache
 from bson import json_util, Int64
 from time import time
   
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
     
 db = MySQLdb.connect(host="localhost",
                      user="root",
@@ -25,6 +25,7 @@ collection = db.tweets_data
 
 twitter_cache = Cache(checkpoint_file='cache_checkpoint.pickle', 
                       checkpoint_interval=2)
+
 
 def get_username(username):
     if type(username) != str:
@@ -143,7 +144,7 @@ def get_hashtag(hashtag):
         except Exception as e:
             print(f"Error: {e}")
 
-def get_word(word):
+def get_keyword(word):
     if type(word) != str:
         word = str(word)
 
@@ -279,7 +280,7 @@ def helloworld():
         option = request.form["options"]
         query = request.form["query"]
     if option == "keyword":
-        data = get_word(query)
+        data = get_keyword(query)
     elif option == "hashtag":
         data = get_hashtag(query)
     else:
@@ -297,4 +298,4 @@ def top_10_users():
     return render_template("/html/top_10.html",value = data.to_html())
   
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

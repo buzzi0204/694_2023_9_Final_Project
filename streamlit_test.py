@@ -1,5 +1,5 @@
 import streamlit as st
-from search_functions import get_hashtag, get_keyword, get_username, get_top_10_tweets, get_top_10_users
+# from search_functions import get_hashtag, get_keyword, get_username, get_top_10_tweets, get_top_10_users
 
 import pandas as pd
 import MySQLdb
@@ -31,7 +31,6 @@ collection = db.tweets_data
 twitter_cache = Cache(checkpoint_file='cache_checkpoint.pickle', 
                       checkpoint_interval=2)
 
-@st.cache_resource
 def get_hashtag(hashtag):
     if type(hashtag) != str:
         hashtag = str(hashtag)
@@ -276,11 +275,6 @@ def get_top_10_tweets():
         except Exception as e:
             print(f"Error: {e}")
 
-
-
-
-
-
 option = st.sidebar.selectbox('Search Query',['Hashtag', 'Keyword', 'Username/Full name'])
 
 if option == 'Hashtag':
@@ -309,6 +303,7 @@ if option == 'Username/Full name':
             st.table(data)
 
 # print(get_top_10_tweets())
+
 
 if st.sidebar.button("Top 10 Tweets"):
     data = get_top_10_tweets()
