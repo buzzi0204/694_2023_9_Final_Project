@@ -1,39 +1,54 @@
-import streamlit as st
+# -*- coding: utf-8 -*-
+"""
 
-apptitle = "Tweet Search Application"
-
-st.set_page_config(page_title=apptitle, page_icon='🔎')
-
-st.title('Tweet Search Application')
-
-st.markdown("""
- * Use the menu at left to select the search value
- * Your results will appear below
-""")
-
-st.sidebar.markdown("Select search condition")
-
-select_event = st.sidebar.selectbox('What do you wanna find?',
-                                    ['Username','Keyword','Hashtag'])
-
-st.sidebar.markdown('Search')
-search_event = st.sidebar.text_input("Enter your query")
+@author: Nikhil & Urjit
+"""
 
 
-button_clicked = st.sidebar.button('Submit')
+from flask import Flask, jsonify, request, render_template
+import MySQLdb
+import pandas as pd
+from pymongo import MongoClient
+from implementing_cache import Cache
+from bson import json_util, Int64
+from time import time
+from search_class import searchFunctions
 
-st.sidebar.markdown('')
-st.sidebar.markdown('')
+app = Flask(__name__, static_folder="static")
 
-st.sidebar.markdown('Click on each button below to get:')
+search = searchFunctions()
 
-top10_user = st.sidebar.button('Top10 Usernames')
-top10_tweets = st.sidebar.button('Top10 Tweets')
 
-# Disable Streamlit caching
-select_event = st.cache(allow_output_mutation=True)(select_event)
-search_event = st.cache(allow_output_mutation=True)(search_event)
-button_clicked = st.cache(allow_output_mutation=True)(button_clicked)
-top10_user = st.cache(allow_output_mutation=True)(top10_user)
-top10_tweets = st.cache(allow_output_mutation=True)(top10_tweets)
-`
+@app.route("/")
+def home():
+    return render_template("/html/form.html")
+
+
+@app.route("/search", methods=["GET", "POST"])
+def helloworld():
+    if request.method == "POST":
+        option = request.form["options"]
+        query = request.form["query"]
+    if option == "keyword":
+        data = search.get_keyword(query)
+    elif option == "hashtag":
+        data = search.get_hashtag(query)
+    else:
+        data = search.get_username(query)
+    return render_template("/html/query.html", name=query, value=data.to_html())
+
+
+@app.route("/top_10_tweets")
+def top_10_tweets():
+    data = search.get_top_10_tweets()
+    return render_template("/html/top_10.html", value=data.to_html())
+
+
+@app.route("/top_10_users")
+def top_10_users():
+    data = search.get_top_10_users()
+    return render_template("/html/top_10.html", value=data.to_html())
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
