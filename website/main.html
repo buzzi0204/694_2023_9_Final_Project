@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tweet Search Application</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header>
+		<h1>Tweet Search Application</h1>
+		<nav>
+			<ul>
+				<li><a href="#" id="username-link">Username</a></li>
+				<li><a href="#" id="keyword-link">Keyword</a></li>
+				<li><a href="#" id="hashtag-link">Hashtag</a></li>
+			</ul>
+		</nav>
+	</header>
+	<main>
+		<h2>Search</h2>
+		<form>
+			<label for="query">Enter your query:</label>
+			<input type="text" id="query" name="query">
+			<button type="submit" id="submit-btn">Submit</button>
+		</form>
+		<div class="buttons">
+			<button id="top10-user-btn">Top10 Usernames</button>
+			<button id="top10-tweets-btn">Top10 Tweets</button>
+		</div>
+	</main>
+	<script src="script.js"></script>
+</body>
+</html>

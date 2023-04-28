@@ -1,21 +1,5 @@
 import streamlit as st
-import MySQLdb
 
-db = MySQLdb.connect(host="localhost",    # your host, usually localhost
-                     user="root",         # your username
-                     passwd="root",  # your password
-                     db="trial")
-cur = db.cursor()
-
-
-
-
-
-
-
-
-
-###################################################################################
 apptitle = "Tweet Search Application"
 
 st.set_page_config(page_title=apptitle, page_icon='🔎')
@@ -45,3 +29,11 @@ st.sidebar.markdown('Click on each button below to get:')
 
 top10_user = st.sidebar.button('Top10 Usernames')
 top10_tweets = st.sidebar.button('Top10 Tweets')
+
+# Disable Streamlit caching
+select_event = st.cache(allow_output_mutation=True)(select_event)
+search_event = st.cache(allow_output_mutation=True)(search_event)
+button_clicked = st.cache(allow_output_mutation=True)(button_clicked)
+top10_user = st.cache(allow_output_mutation=True)(top10_user)
+top10_tweets = st.cache(allow_output_mutation=True)(top10_tweets)
+`
