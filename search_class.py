@@ -26,6 +26,24 @@ class searchFunctions:
         )
 
     def get_username(self, username):
+
+        """
+        This function takes a Twitter username as an argument and returns a dataframe with their tweet data.
+        The function first checks if the data for the given user is already present in the cache. If it is, the data is
+        returned from the cache. Otherwise, the function retrieves the tweet data for the given user from a database,
+        extracts the relevant keys from the tweet documents, and stores the data in a dataframe. The resulting dataframe is
+        sorted by popularity and cached for future use.
+
+        Args:
+        username (str): A string representing the Twitter username to retrieve tweet data for.
+
+        Returns:
+        pandas.DataFrame: A dataframe containing the tweet data for the given user, sorted by popularity.
+
+        Raises:
+            Exception: If an error occurs during the database query or dataframe creation.
+        """
+
         if type(username) != str:
             username = str(username)
 
@@ -91,7 +109,35 @@ class searchFunctions:
             except Exception as e:
                 print(f"Error: {e}")
 
+###############################################################################################################################
+############################################################################################################################
+
     def get_hashtag(self, hashtag):
+
+        """
+        Queries a MongoDB collection and a MySQL database to retrieve relevant data based on the provided hashtag.
+
+        Args:
+        hashtag (str): The hashtag to search for.
+
+        Returns:
+        pandas.DataFrame: A DataFrame containing the results of the query. The DataFrame has the following columns:
+                        'user_id', 'username', 'tweet_id', 'tweet_text', and 'popularity'.
+
+                        'user_id': The user ID of the user who posted the tweet.
+                        'username': The username of the user who posted the tweet.
+                        'tweet_id': The ID of the tweet.
+                        'tweet_text': The text of the tweet.
+                        'popularity': The number of likes and retweets for the tweet.
+
+                        If no documents are found for the hashtag, a message is printed and None is returned.
+        
+        Raises:
+            Exception: If an error occurs during the database query or dataframe creation.
+        """
+
+
+
         if type(hashtag) != str:
             hashtag = str(hashtag)
 
@@ -161,7 +207,27 @@ class searchFunctions:
             except Exception as e:
                 print(f"Error: {e}")
 
+#####################################################################################################################
+###################################################################################################################
+
     def get_keyword(self, keyword):
+
+        """
+        Fetch tweets containing a given keyword and return the result in a dataframe.
+
+        Args:
+            word (str): The keyword to search for in the tweets.
+
+        Returns:
+            pandas.DataFrame: A dataframe containing the user_id, username, tweet_text, and popularity of the tweets that match the search term.
+
+        Raises:
+            Exception: If an error occurs during the database query or dataframe creation.
+        """
+
+
+
+
         if type(keyword) != str:
             keyword = str(keyword)
 
@@ -225,7 +291,19 @@ class searchFunctions:
             except Exception as e:
                 print(f"Error: {e}")
 
+############################################################################################################################
+############################################################################################################################
+
     def get_top_10_tweets(self):
+
+        """
+        Returns a dataframe of the top 10 tweets by popularity, including the tweet text, popularity, user ID, and username.
+
+        Returns:
+        pandas.DataFrame: A dataframe of the top 10 tweets by popularity, including the tweet text, popularity, user ID, and username.
+        """
+
+
         target_key = (__name__, "get_top_10_tweets")
 
         if target_key in self.twitter_cache.cache.keys():
@@ -278,7 +356,20 @@ class searchFunctions:
             except Exception as e:
                 print(f"Error: {e}")
 
+
+#################################################################################################################
+###############################################################################################################
+
+
     def get_top_10_users(self):
+
+        """
+        Retrieves the top 10 users based on their followers count and total number of tweets.
+
+        Returns:
+        pandas.DataFrame: A DataFrame containing the user_id and username of the top 10 users.
+        """
+
         target_key = (__name__, "get_top_10_users")
 
         if target_key in self.twitter_cache.cache.keys():
@@ -302,14 +393,3 @@ class searchFunctions:
 
             except Exception as e:
                 print(f"Error: {e}")
-
-
-# search = searchFunctions()
-
-# search.get_username('john')
-# search.get_hashtag('covid')
-# search.get_keyword('death')
-# search.get_top_10_tweets()
-# search.get_top_10_users()
-
-# search.twitter_cache.cache.keys()
