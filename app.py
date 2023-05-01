@@ -5,12 +5,7 @@
 """
 
 
-from flask import Flask, jsonify, request, render_template
-import MySQLdb
-import pandas as pd
-from pymongo import MongoClient
-from implementing_cache import Cache
-from bson import json_util, Int64
+from flask import Flask, request, render_template, url_for
 from time import time
 from search_class import searchFunctions
 
@@ -25,7 +20,7 @@ def home():
 
 
 @app.route("/search", methods=["GET", "POST"])
-def helloworld():
+def searchOptions():
     try:
         if request.method == "POST":
             option = request.form["options"]
@@ -48,7 +43,7 @@ def helloworld():
                 
         return render_template("/html/query.html", name=query, value=data.to_html())
     except Exception as e:
-        return render_template("/html/missing.html")
+        return render_template("/html/missing.html", name=query)
 
 @app.route("/top_10_tweets")
 def top_10_tweets():
@@ -70,3 +65,7 @@ def top_10_users():
 
 if __name__ == "__main__":
     app.run(debug=True)
+    app.add_url_rule('/favicon.ico',
+                 redirect_to=url_for('static', filename='favicon.ico'))
+    app.add_url_rule('/style.css',
+                 redirect_to=url_for('static', filename='style.css'))
