@@ -30,7 +30,7 @@ class Cache:
         checkpoint_file (str): The file to save cache state to.
         checkpoint_interval (int): The interval for saving cache state.
         """
-
+        
         self.max_size = 10  # Maximum size of the cache
         self.cache = {}  # Dictionary to store cache key-value pairs
         self.key_times = []  # List to keep track of the time when keys were added

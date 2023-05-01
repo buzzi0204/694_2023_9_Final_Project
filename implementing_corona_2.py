@@ -78,29 +78,9 @@ cur = db.cursor()
 
 
 ###############################################################################
-# Inserting user data into sql
+# This script extracts user account information from a Twitter data list and stores it in a MySQL database.
+# It also creates dictionaries to store the user information for retweets and quoted tweets separately.
 ###############################################################################
-"""
-This script extracts user account information from a Twitter data list and stores it in a MySQL database.
-It also creates dictionaries to store the user information for retweets and quoted tweets separately.
-
-Variables:
-----------
-key_list : list
-    A list of keys that correspond to the attributes of a user account.
-query_insert : str
-    A SQL insert query statement for inserting the user data into the database.
-val_dict : dict
-    A dictionary to store user account information for original tweets.
-rt_val_dict : dict
-    A dictionary to store user account information for retweets.
-qt_val_dict : dict
-    A dictionary to store user account information for quoted tweets.
-
-Returns:
---------
-None
-"""
 
 # Define a list of keys that correspond to the attributes of a user account
 key_list = [

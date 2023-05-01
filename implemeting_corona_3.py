@@ -141,23 +141,10 @@ create_table_query = "CREATE TABLE IF NOT EXISTS quoted_tweet_data(\
 # execute the SQL query to create the "quoted_tweet_data" table
 cur.execute(create_table_query)
 
-###############################################################################
-############ Inserting data for tweets_data, retweet, quoted_tweet
-###############################################################################
-"""
-This script extracts user account information from a Twitter data list and stores it in a MySQL database.
-It also creates dictionaries to store the user information for retweets and quoted tweets separately.
-
-Parameters:
-key_list (list): A list of keys that correspond to the attributes of a user account.
-query_insert (str): A SQL insert query statement for inserting the user data into the database.
-val_dict (dict): A dictionary to store user account information for original tweets.
-rt_val_dict (dict): A dictionary to store user account information for retweets.
-qt_val_dict (dict):A dictionary to store user account information for quoted tweets.
-
-Returns:
-None
-"""
+########################################################################################################################
+############ This script extracts user account information from a Twitter data list and stores it in a MySQL database.
+############ It also creates dictionaries to store the user information for retweets and quoted tweets separately.
+########################################################################################################################
 
 # list of keys to be extracted from data dictionary
 key_list = [
@@ -256,23 +243,12 @@ for i in range(len(data)):
 # commit the changes to the database
 db.commit()
 
-# print(len(val_dict))
-# print(len(rt_val_dict))
-# print(len(qt_val_dict))
 
-###############################################################################
+###################################################################################################################
+############ This script extracts retweet information from a Twitter data list and stores it in a MySQL database. 
+############ It creates a dictionary to store the retweet information for each retweet.
+###################################################################################################################
 
-"""
-This script extracts retweet information from a Twitter data list and stores it in a MySQL database. 
-It creates a dictionary to store the retweet information for each retweet.
-
-Parameters:
-query_insert (str): A SQL insert query statement for inserting the retweet data into the database.
-val_dict (dict): A dictionary to store retweet data.
-
-Returns:
-None
-"""
 
 # Define a SQL query to insert data into a table called retweet_data
 query_insert = "INSERT INTO retweet_data VALUES(%s,%s,%s,%s);"
@@ -312,23 +288,11 @@ for i in range(len(data)):
 # Commit the changes to the database
 db.commit()
 
-# print(len(val_dict))
-
-###############################################################################
-
-"""
-This script inserts data into a 'quoted_tweets' table in a SQL database. It checks if each element of a given 'data' list
-contains a 'quoted_status' key, and if so, creates a row with four values (tweet ID, quoted tweet ID, user ID, and created time of the quoted tweet).
-It then executes an SQL query to insert the values into the database, and prints the number of rows that were successfully inserted.
-
-Parameters:
-data (list of dict): A list of JSON objects containing tweet data.
-cur (cursor object): A cursor object that allows interaction with the SQL database.
-db (database connection object): A connection object that represents a connection to the SQL database.
-
-Returns:
-None
-"""
+###########################################################################################################
+########This script inserts data into a 'quoted_tweets' table in a SQL database. It checks if each element of a given 'data' list
+########contains a 'quoted_status' key, and if so, creates a row with four values (tweet ID, quoted tweet ID, user ID, and created time of the quoted tweet).
+########It then executes an SQL query to insert the values into the database, and prints the number of rows that were successfully inserted.
+###########################################################################################################
 
 # Define a SQL query for inserting data into a table called "quoted_tweet_data"
 query_insert = "INSERT INTO quoted_tweet_data VALUES(%s,%s,%s,%s)"
@@ -370,22 +334,12 @@ for i in range(len(data)):
 # Commit changes to the database
 db.commit()
 
-# print(len(val_dict))
-
 ###############################################################################
-########## Inserting tweets in MongoDB
+########## This script extracts data from a JSON file containing tweet data, and inserts the data into a MongoDB database.
+########## It loops through each tweet in the data object and extracts the tweet's ID, text, created time, source, user ID, language, 
+########## and popularity score (the sum of the counts for quote, reply, retweet, and favorite). The extracted data is then inserted 
+########## into the 'tweets_data' collection in the 'trial' database in MongoDB.
 ###############################################################################
-"""
-This script extracts data from a JSON file containing tweet data, and inserts the data into a MongoDB database.
-It loops through each tweet in the data object and extracts the tweet's ID, text, created time, source, user ID, language, and popularity score (the sum of the counts for quote, reply, retweet, and favorite). The extracted data is then inserted into the 'tweets_data' collection in the 'trial' database in MongoDB.
-
-
-Parameters:
-None
-
-Returns:
-None
-"""
 
 # Try to establish a connection to MongoDB
 try:
@@ -1051,5 +1005,3 @@ print(twitter_cache.cache.keys())
 
 # Printing the result of retrieving a key from the cache
 print(twitter_cache.get(("__main__", "get_word", "covid")))
-
-###############################################################################
