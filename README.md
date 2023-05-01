@@ -5,8 +5,7 @@ To run the app:
 > flask --app app run
 
 
-This will get the app setup and running on the localhost.
-
-User needs to install MySQL and MongoDB into their system.
-
-To load this data we need the datafile in the root location and run implementing_corona_3.py. This will load all the data into all the databases.
+Note:
+* This will get the app setup and running on the localhost.
+* User needs to install MySQL and MongoDB into their system.
+* To load this data we need the datafile in the root location and run implementing_corona_3.py. This will load all the data into all the databases.
