@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-@author: Urjit
+@author: Urjit Patil
 """
 
 
