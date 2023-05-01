@@ -22,15 +22,15 @@ from time import time
 # and write the data to a specified output file
 def make_json(filepath, output_filename):
     """
-    Reads json data from a file, separates json objects from the file content,
+    This function reads json data from a file, separates json objects from the file content,
     and saves the resulting json data to a new file.
 
-    Args:
-    - filepath (str): The path of the input file containing json data.
-    - output_filename (str): The name of the output file to be created with the resulting json data.
+    Parameters:
+    filepath (str): The path of the input file containing json data.
+    output_filename (str): The name of the output file to be created with the resulting json data.
 
     Returns:
-    - None
+    None
     """
 
     # open the input file and read its contents into a variable
@@ -148,21 +148,14 @@ cur.execute(create_table_query)
 This script extracts user account information from a Twitter data list and stores it in a MySQL database.
 It also creates dictionaries to store the user information for retweets and quoted tweets separately.
 
-Variables:
-----------
-key_list : list
-    A list of keys that correspond to the attributes of a user account.
-query_insert : str
-    A SQL insert query statement for inserting the user data into the database.
-val_dict : dict
-    A dictionary to store user account information for original tweets.
-rt_val_dict : dict
-    A dictionary to store user account information for retweets.
-qt_val_dict : dict
-    A dictionary to store user account information for quoted tweets.
+Parameters:
+key_list (list): A list of keys that correspond to the attributes of a user account.
+query_insert (str): A SQL insert query statement for inserting the user data into the database.
+val_dict (dict): A dictionary to store user account information for original tweets.
+rt_val_dict (dict): A dictionary to store user account information for retweets.
+qt_val_dict (dict):A dictionary to store user account information for quoted tweets.
 
 Returns:
---------
 None
 """
 
@@ -273,15 +266,11 @@ db.commit()
 This script extracts retweet information from a Twitter data list and stores it in a MySQL database. 
 It creates a dictionary to store the retweet information for each retweet.
 
-Variables:
-----------
-query_insert : str
-    A SQL insert query statement for inserting the retweet data into the database.
-val_dict : dict
-    A dictionary to store retweet data.
+Parameters:
+query_insert (str): A SQL insert query statement for inserting the retweet data into the database.
+val_dict (dict): A dictionary to store retweet data.
 
 Returns:
---------
 None
 """
 
@@ -332,16 +321,13 @@ This script inserts data into a 'quoted_tweets' table in a SQL database. It chec
 contains a 'quoted_status' key, and if so, creates a row with four values (tweet ID, quoted tweet ID, user ID, and created time of the quoted tweet).
 It then executes an SQL query to insert the values into the database, and prints the number of rows that were successfully inserted.
 
-The SQL query is:
-    INSERT INTO quoted_tweets VALUES(%s,%s,%s,%s)
-
 Parameters:
-    - data (list of dict): A list of JSON objects containing tweet data.
-    - cur (cursor object): A cursor object that allows interaction with the SQL database.
-    - db (database connection object): A connection object that represents a connection to the SQL database.
+data (list of dict): A list of JSON objects containing tweet data.
+cur (cursor object): A cursor object that allows interaction with the SQL database.
+db (database connection object): A connection object that represents a connection to the SQL database.
 
 Returns:
-    None
+None
 """
 
 # Define a SQL query for inserting data into a table called "quoted_tweet_data"
@@ -390,21 +376,15 @@ db.commit()
 ########## Inserting tweets in MongoDB
 ###############################################################################
 """
-This script extracts data from a JSON file containing tweet data, and inserts the data into a MongoDB database. It loops through each tweet in the data object and extracts the tweet's ID, text, created time, source, user ID, language, and popularity score (the sum of the counts for quote, reply, retweet, and favorite). The extracted data is then inserted into the 'tweets_data' collection in the 'trial' database in MongoDB.
+This script extracts data from a JSON file containing tweet data, and inserts the data into a MongoDB database.
+It loops through each tweet in the data object and extracts the tweet's ID, text, created time, source, user ID, language, and popularity score (the sum of the counts for quote, reply, retweet, and favorite). The extracted data is then inserted into the 'tweets_data' collection in the 'trial' database in MongoDB.
 
-The MongoDB connection is established using the MongoClient class from the PyMongo library. The connection is tested by attempting to create a MongoClient object.
-
-The JSON file is opened using Python's built-in open function, and the data is loaded into a Python object using the json.load function.
-
-The extract_source function takes a string input and returns the source of the tweet, which is extracted from the 'source' field of the tweet.
-
-The mongo_insertor function takes a tweet object and a list of keys to extract from the tweet. It creates a dictionary object containing the extracted data, and returns the dictionary.
 
 Parameters:
-    - None
+None
 
 Returns:
-    None
+None
 """
 
 # Try to establish a connection to MongoDB
@@ -647,7 +627,7 @@ def get_username(username):
 # Define a function named 'get_hashtag' that takes a 'hashtag' parameter
 def get_hashtag(hashtag):
     """
-    Queries a MongoDB collection and a MySQL database to retrieve relevant data based on the provided hashtag.
+    This function queries a MongoDB collection and a MySQL database to retrieve relevant data based on the provided hashtag.
 
     Parameters:
     hashtag (str): The hashtag to search for.
@@ -750,16 +730,16 @@ def get_hashtag(hashtag):
 # Create a function that returns the tweets with the keyword
 def get_keyword(word):
     """
-    Fetch tweets containing a given keyword and return the result in a dataframe.
+    This function fetch tweets containing a given keyword and return the result in a dataframe.
 
-    Args:
-        word (str): The keyword to search for in the tweets.
+    Parameters:
+    word (str): The keyword to search for in the tweets.
 
     Returns:
-        pandas.DataFrame: A dataframe containing the user_id, username, tweet_text, and popularity of the tweets that match the search term.
+    pandas.DataFrame: A dataframe containing the user_id, username, tweet_text, and popularity of the tweets that match the search term.
 
     Raises:
-        Exception: If an error occurs during the database query or dataframe creation.
+    Exception: If an error occurs during the database query or dataframe creation.
     """
 
     # Convert the word to string if it is not already a string
@@ -855,7 +835,7 @@ def get_keyword(word):
 # Define a function to get the top 10 users based on the number of followers and total tweets
 def get_top_10_users():
     """
-    Retrieves the top 10 users based on their followers count and total number of tweets.
+    This function retrieves the top 10 users based on their followers count and total number of tweets.
 
     Returns:
     pandas.DataFrame: A DataFrame containing the user_id and username of the top 10 users.
@@ -908,10 +888,10 @@ def get_top_10_users():
 # Define a function to get the top 10 tweets based on popularity
 def get_top_10_tweets():
     """
-    Returns a dataframe of the top 10 tweets by popularity, including the tweet text, popularity, user ID, and username.
+    This function returns a dataframe of the top 10 tweets by popularity, including the tweet text, popularity, user ID, and username.
 
     Returns:
-        pandas.DataFrame: A dataframe of the top 10 tweets by popularity, including the tweet text, popularity, user ID, and username.
+    pandas.DataFrame: A dataframe of the top 10 tweets by popularity, including the tweet text, popularity, user ID, and username.
     """
 
     # Create a tuple with the module name and function name

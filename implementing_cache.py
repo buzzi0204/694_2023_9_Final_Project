@@ -24,9 +24,9 @@ class Cache:
 
     def __init__(self, checkpoint_file=None, checkpoint_interval=None):
         """
-        Initializes the Cache object.
+        This function initializes the Cache object.
 
-        Args:
+        Parameters:
         checkpoint_file (str): The file to save cache state to.
         checkpoint_interval (int): The interval for saving cache state.
         """
@@ -43,9 +43,9 @@ class Cache:
 
     def get(self, key):
         """
-        Retrieves the value associated with the key.
+        This function retrieves the value associated with the key.
 
-        Args:
+        Parameters:
         key (str): The key to retrieve the value for.
 
         Returns:
@@ -61,11 +61,14 @@ class Cache:
 
     def set(self, key, value):
         """
-        Adds the key-value pair to the cache, evicting the oldest key if the maximum size is exceeded.
+        This function adds the key-value pair to the cache, evicting the oldest key if the maximum size is exceeded.
 
-        Args:
+        Parameters:
         key (str): The key to add to the cache.
         value: The value associated with the key.
+        
+        Returns:
+        None
         """
 
         if len(self.cache) >= self.max_size:
@@ -92,7 +95,7 @@ class Cache:
 
     def save_checkpoint(self):
         """
-        Saves the cache state to the checkpoint file.
+        This function saves the cache state to the checkpoint file.
         """
 
         with open(self.checkpoint_file, "wb") as file:
@@ -102,7 +105,7 @@ class Cache:
 
     def load_checkpoint(self):
         """
-        Loads the cache state from the checkpoint file.
+        This function loads the cache state from the checkpoint file.
         """
 
         try:
